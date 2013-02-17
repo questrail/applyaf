@@ -36,6 +36,7 @@ def _read_csv_file(filename, freq_unit_multiplier):
     '''
     Read csv file into a numpy array
     '''
+    # FIXME: Test a file with blank lines in the CSV file.
     with open(filename) as f:
         # Determine if the CSV file has a header row
         has_header = csv.Sniffer().has_header(f.read(1024))
@@ -49,9 +50,6 @@ def _read_csv_file(filename, freq_unit_multiplier):
         array_to_return = np.loadtxt(f, dtype={'names': ('frequency', 'amplitude_db'),
             'formats': ('f8', 'f8')}, delimiter=',', skiprows=rows_to_skip)
         array_to_return['frequency'] *= freq_unit_multiplier
-        print(array_to_return.shape)
-        print(array_to_return['frequency'].shape)
-        print(array_to_return.dtype)
         return array_to_return
 
 def _remove_duplicate_frequencies(my_array, duplicates='Keep Max'):
