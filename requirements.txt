@@ -1,0 +1,13 @@
+distribute==0.6.31
+git-remote-helpers==0.1.0
+nose==1.2.1
+numpy==1.7.0
+pandas==0.10.1
+python-dateutil==2.1
+pytz==2012j
+six==1.2.0
+stevedore==0.7.2
+virtualenv==1.8.4
+virtualenv-clone==0.2.4
+virtualenvwrapper==3.6
+wsgiref==0.1.2
