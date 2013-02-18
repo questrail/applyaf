@@ -52,7 +52,24 @@ class TestReadingCSVFiles(unittest.TestCase):
         np.testing.assert_array_equal(self.cable_losses,
                 self.known_cable_losses)
 
-class TestiRemoveDuplicates(unittest.TestCase):
+    def test_applying_antenna_factor(self):
+        known_incident_field = np.array([
+            (3.12879e8, 44.200116867),
+            (3.14719e8, 43.704955533),
+            (3.18398e8, 44.4234524),
+            (3.20238e8, 44.224091067),
+            (3.22078e8, 43.717929733),
+            (3.25758e8, 43.557791067)], dtype=self.my_data_type)
+        calculated_incident_field = applyaf.apply_antenna_factor(
+                self.spectrum_analyzer_readings,
+                self.antenna_factors,
+                self.cable_losses)
+        np.testing.assert_array_equal(calculated_incident_field['frequency'],
+                known_incident_field['frequency'])
+        np.testing.assert_array_almost_equal(calculated_incident_field['amplitude_db'],
+                known_incident_field['amplitude_db'])
+
+class TestingRemoveDuplicates(unittest.TestCase):
 
     def setUp(self):
         self.my_data_type = [('frequency', np.float64), ('amplitude_db', np.float64)]

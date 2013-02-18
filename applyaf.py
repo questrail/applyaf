@@ -57,7 +57,7 @@ def _remove_duplicate_frequencies(unsorted_array, keep_max=True):
     # Sort the data based on the frequency and then the amplitude
     sorted_array = np.sort(unsorted_array, order=['frequency', 'amplitude_db'])
     if keep_max:
-        # Sort so that we keep the maximum values
+        # Reverse the sort order, so that we end up keeping the max value
         sorted_array = sorted_array[::-1]
 
     # Determine the unique indices and only return those
@@ -65,7 +65,7 @@ def _remove_duplicate_frequencies(unsorted_array, keep_max=True):
     return sorted_array[unique_indices]
 
 def apply_antenna_factor(analyzer_readings, antenna_factors,
-        cableloss=False, duplicates='Keep Max'):
+        cable_losses=False, keep_max=True):
     '''
     Applies the antenna factor to spectrum analyzer readings and
     optional 1) applies a cable loss and 2) removes duplicates
@@ -78,9 +78,39 @@ def apply_antenna_factor(analyzer_readings, antenna_factors,
     value or `Keep Min` removes duplicates and keeps the minimum value
     '''
 
-    # Remove duplicates and keep the maximum 
+    # Remove duplicates and keep the max or min
+    analyzer_readings_no_duplicates = _remove_duplicate_frequencies(
+            analyzer_readings, keep_max)
+    antenna_factors_no_duplicates = _remove_duplicate_frequencies(
+            antenna_factors, keep_max)
 
-    return
+    # Interpolate the antenna factors so that they align
+    # with the frequencies found in the spectrum analyzer readings
+    antenna_factors_at_analyzer_frequencies = np.interp(
+            analyzer_readings_no_duplicates['frequency'],
+            antenna_factors_no_duplicates['frequency'],
+            antenna_factors_no_duplicates['amplitude_db'])
+
+    if isinstance(cable_losses, np.ndarray):
+        # If a numpy.array was provided for the cables_losses then
+        # remove the duplicates and interpolate so that its frequencies
+        # align with the spectrum analyzer readings
+        cable_losses_no_duplicates = _remove_duplicate_frequencies(
+                cable_losses, keep_max)
+        cable_losses_at_analyzer_frequencies = np.interp(
+                analyzer_readings_no_duplicates['frequency'],
+                cable_losses_no_duplicates['frequency'],
+                cable_losses_no_duplicates['amplitude_db'])
+        incident_field = analyzer_readings_no_duplicates
+        incident_field['amplitude_db'] += antenna_factors_at_analyzer_frequencies
+        incident_field['amplitude_db'] += cable_losses_at_analyzer_frequencies
+    else:
+        # There were no cable losses provided, so just apply the
+        # antenna factors.
+        incident_field = analyzer_readings_no_duplicates
+        incident_field['amplitude_db'] += antenna_factors_at_analyzer_frequencies
+
+    return incident_field
 
 if __name__ == "__main__":
     import argparse
