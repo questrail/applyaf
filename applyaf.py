@@ -20,7 +20,6 @@ import os.path
 
 # Data analysis related imports
 import numpy as np
-import pandas as pd
 
 def _is_valid_file(parser, arg):
     '''
