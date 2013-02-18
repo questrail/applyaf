@@ -52,6 +52,39 @@ class TestReadingCSVFiles(unittest.TestCase):
         np.testing.assert_array_equal(self.cable_losses,
                 self.known_cable_losses)
 
+class TestiRemoveDuplicates(unittest.TestCase):
+
+    def setUp(self):
+        self.my_data_type = [('frequency', np.float64), ('amplitude_db', np.float64)]
+        self.given_array_with_duplicates = np.array([
+            (3.20238e8, 30.05846),
+            (3.12879e8, 30.33228),
+            (3.18398e8, 30.33228),
+            (3.20238e8, 30.04746),
+            (3.25758e8, 29.19304)], dtype=self.my_data_type)
+        self.given_array_without_duplicates_kept_max = np.array([
+            (3.12879e8, 30.33228),
+            (3.18398e8, 30.33228),
+            (3.20238e8, 30.05846),
+            (3.25758e8, 29.19304)], dtype=self.my_data_type)
+        self.given_array_without_duplicates_kept_min = np.array([
+            (3.12879e8, 30.33228),
+            (3.18398e8, 30.33228),
+            (3.20238e8, 30.04746),
+            (3.25758e8, 29.19304)], dtype=self.my_data_type)
+
+    def test_remove_duplicates_keep_max(self):
+        array_without_duplicates_kept_max = applyaf._remove_duplicate_frequencies(
+                self.given_array_with_duplicates, True)
+        np.testing.assert_array_equal(array_without_duplicates_kept_max,
+                self.given_array_without_duplicates_kept_max)
+
+    def test_remove_duplicates_keep_min(self):
+        array_without_duplicates_kept_min = applyaf._remove_duplicate_frequencies(
+                self.given_array_with_duplicates, keep_max=False)
+        np.testing.assert_array_equal(array_without_duplicates_kept_min,
+                self.given_array_without_duplicates_kept_min)
+
 if __name__ == '__main__':
     unittest.main()
 

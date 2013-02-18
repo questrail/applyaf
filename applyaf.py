@@ -43,27 +43,26 @@ def _read_csv_file(filename, freq_unit_multiplier):
         rows_to_skip = 1 if has_header else 0
         # Go back to the file's beginning and read it into np.array
         f.seek(0)
-        # Comment out the previous usage and convert to structured arrays
-        #array_to_return = np.loadtxt(f, delimiter=',',
-                #skiprows=rows_to_skip).T
-        #array_to_return[0,:] *= freq_unit_multiplier
         array_to_return = np.loadtxt(f, dtype={'names': ('frequency', 'amplitude_db'),
             'formats': ('f8', 'f8')}, delimiter=',', skiprows=rows_to_skip)
         array_to_return['frequency'] *= freq_unit_multiplier
         return array_to_return
 
-def _remove_duplicate_frequencies(my_array, duplicates='Keep Max'):
+def _remove_duplicate_frequencies(unsorted_array, keep_max=True):
     '''
     Input is a numpy array containing two columns, frequency and amplitude.
     Remove the duplicate frequencies.
     '''
 
-    # Convert from a numpy array to a pandas DataFrame
-    #my_dataframe = pd.DataFrame(my_array)
-    # FIXME: Try to remove the duplicates without using pandas
-
-    return
     # Sort the data based on the frequency and then the amplitude
+    sorted_array = np.sort(unsorted_array, order=['frequency', 'amplitude_db'])
+    if keep_max:
+        # Sort so that we keep the maximum values
+        sorted_array = sorted_array[::-1]
+
+    # Determine the unique indices and only return those
+    unique_indices = np.unique(sorted_array['frequency'], return_index=True)[1]
+    return sorted_array[unique_indices]
 
 def apply_antenna_factor(analyzer_readings, antenna_factors,
         cableloss=False, duplicates='Keep Max'):
