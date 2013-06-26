@@ -27,9 +27,8 @@ import numpy as np
 
 
 def _is_valid_file(parser, arg):
-    '''
-    Determine if the argument is an existing file
-    '''
+    """Determine if the argument is an existing file
+    """
     if not os.path.isfile(arg):
         parser.error("The file {} does not exist!".format(arg))
     else:
@@ -38,9 +37,8 @@ def _is_valid_file(parser, arg):
 
 
 def _read_csv_file(filename, freq_unit_multiplier):
-    '''
-    Read csv file into a numpy array
-    '''
+    """Read csv file into a numpy array
+    """
     # FIXME: Test a file with blank lines in the CSV file.
     with open(filename) as f:
         # Determine if the CSV file has a header row
@@ -60,10 +58,24 @@ def _read_csv_file(filename, freq_unit_multiplier):
 
 
 def _remove_duplicate_frequencies(unsorted_array, keep_max=True):
-    '''
-    Input is a numpy array containing two columns, frequency and amplitude.
+    """Remove duplicates and sort by frequency
+
+    Given a structured numpy array with 'frequency' and 'amplitude_db' fields,
+    sort that array first by frequency and then by amplitude. Depending on
+    whether the user wants to keep the max or min value, return the sorted
+    array containing no duplicate frequency entries.
     Remove the duplicate frequencies.
-    '''
+
+    Args:
+        unsorted_array: A 1D numpy structured array with fields 'frequency' and
+            'amplitude_db'.
+        keep_max: A boolean determing if the max or min amplitude values will
+            be kept when duplicate frequencies are found.
+
+    Returns:
+        A sorted 1D numpy structured array with fields 'frequency' and
+        'amplitude_db' with no duplicate frequencies.
+    """
 
     # Sort the data based on the frequency and then the amplitude
     sorted_array = np.sort(unsorted_array, order=['frequency', 'amplitude_db'])
@@ -78,17 +90,36 @@ def _remove_duplicate_frequencies(unsorted_array, keep_max=True):
 
 def apply_antenna_factor(analyzer_readings, antenna_factors,
                          cable_losses=False, keep_max=True):
-    '''
-    Applies the antenna factor to spectrum analyzer readings and
-    optional 1) applies a cable loss and 2) removes duplicates
-    from the data
+    """Apply the antenna factor and cable losses to the input data.
 
-    # Inputs
-    `cableloss` = False or numpy.array to add to spectrum analyzer
-    readings in order to calculate the incident electric field
-    `duplices` = `Keep Max` removes duplicates and keeps the maximum
-    value or `Keep Min` removes duplicates and keeps the minimum value
-    '''
+    Applies the frequency dependent antenna factor and, optionally, the cable
+    losses to a given input data (typically spectrum analyzer readings). Before
+    interpolating the frequencies of the antenna factors and cable losses onto
+    the dataset, any duplicate frequency entries are removed and either the
+    minimum or maximum amplitude value is kept depending on the user's
+    selection.
+
+    This is used to calculate the incident field which is defined as:
+
+        E(dBuV/m) = AF(dB) + Vsa(dBuV) + cable_loss(dB)
+
+    as given by Eqn 7.62 in *Introduction to Electromagnetic Compatibility* 2nd
+    edition by Clayton Paul.
+
+    Args:
+        analyzer_readings: A 1D numpy structured array containing the fields
+            'frequency' and 'amplitude_db'.
+        antenna_factors: A 1D numpy structured array containing the fields
+            'frequency' and 'amplitude_db'.
+        cables_losses: A 1D numpy structured array containing the fields
+            'frequency' and 'amplitude_db'.
+        keep_max: A boolean determining whether the max or min amplitudes are
+            kept whenever duplicate frequency entries are found in the
+            antenna_factors or cable_losses arrays.
+
+    Returns:
+        A 1D numpy structured array containing the incident field.
+    """
 
     # Remove duplicates and keep the max or min
     analyzer_readings_no_duplicates = _remove_duplicate_frequencies(
