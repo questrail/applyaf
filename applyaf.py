@@ -25,15 +25,17 @@ import os.path
 # Data analysis related imports
 import numpy as np
 
+
 def _is_valid_file(parser, arg):
     '''
     Determine if the argument is an existing file
     '''
     if not os.path.isfile(arg):
-        parser.error("The file %s does not exist!"%arg)
+        parser.error("The file {} does not exist!".format(arg))
     else:
         # File exists so return the filename
         return arg
+
 
 def _read_csv_file(filename, freq_unit_multiplier):
     '''
@@ -47,10 +49,15 @@ def _read_csv_file(filename, freq_unit_multiplier):
         rows_to_skip = 1 if has_header else 0
         # Go back to the file's beginning and read it into np.array
         f.seek(0)
-        array_to_return = np.loadtxt(f, dtype={'names': ('frequency', 'amplitude_db'),
-            'formats': ('f8', 'f8')}, delimiter=',', skiprows=rows_to_skip)
+        array_to_return = np.loadtxt(
+            f,
+            dtype={'names': ('frequency', 'amplitude_db'),
+                   'formats': ('f8', 'f8')},
+            delimiter=',',
+            skiprows=rows_to_skip)
         array_to_return['frequency'] *= freq_unit_multiplier
         return array_to_return
+
 
 def _remove_duplicate_frequencies(unsorted_array, keep_max=True):
     '''
@@ -68,8 +75,9 @@ def _remove_duplicate_frequencies(unsorted_array, keep_max=True):
     unique_indices = np.unique(sorted_array['frequency'], return_index=True)[1]
     return sorted_array[unique_indices]
 
+
 def apply_antenna_factor(analyzer_readings, antenna_factors,
-        cable_losses=False, keep_max=True):
+                         cable_losses=False, keep_max=True):
     '''
     Applies the antenna factor to spectrum analyzer readings and
     optional 1) applies a cable loss and 2) removes duplicates
@@ -84,50 +92,56 @@ def apply_antenna_factor(analyzer_readings, antenna_factors,
 
     # Remove duplicates and keep the max or min
     analyzer_readings_no_duplicates = _remove_duplicate_frequencies(
-            analyzer_readings, keep_max)
+        analyzer_readings, keep_max)
     antenna_factors_no_duplicates = _remove_duplicate_frequencies(
-            antenna_factors, keep_max)
+        antenna_factors, keep_max)
 
     # Interpolate the antenna factors so that they align
     # with the frequencies found in the spectrum analyzer readings
     antenna_factors_at_analyzer_frequencies = np.interp(
-            analyzer_readings_no_duplicates['frequency'],
-            antenna_factors_no_duplicates['frequency'],
-            antenna_factors_no_duplicates['amplitude_db'])
+        analyzer_readings_no_duplicates['frequency'],
+        antenna_factors_no_duplicates['frequency'],
+        antenna_factors_no_duplicates['amplitude_db'])
 
     if isinstance(cable_losses, np.ndarray):
         # If a numpy.array was provided for the cables_losses then
         # remove the duplicates and interpolate so that its frequencies
         # align with the spectrum analyzer readings
         cable_losses_no_duplicates = _remove_duplicate_frequencies(
-                cable_losses, keep_max)
+            cable_losses, keep_max)
         cable_losses_at_analyzer_frequencies = np.interp(
-                analyzer_readings_no_duplicates['frequency'],
-                cable_losses_no_duplicates['frequency'],
-                cable_losses_no_duplicates['amplitude_db'])
+            analyzer_readings_no_duplicates['frequency'],
+            cable_losses_no_duplicates['frequency'],
+            cable_losses_no_duplicates['amplitude_db'])
         incident_field = analyzer_readings_no_duplicates
-        incident_field['amplitude_db'] += antenna_factors_at_analyzer_frequencies
-        incident_field['amplitude_db'] += cable_losses_at_analyzer_frequencies
+        incident_field['amplitude_db'] += \
+            antenna_factors_at_analyzer_frequencies
+        incident_field['amplitude_db'] += \
+            cable_losses_at_analyzer_frequencies
     else:
         # There were no cable losses provided, so just apply the
         # antenna factors.
         incident_field = analyzer_readings_no_duplicates
-        incident_field['amplitude_db'] += antenna_factors_at_analyzer_frequencies
+        incident_field['amplitude_db'] += \
+            antenna_factors_at_analyzer_frequencies
 
     return incident_field
 
 if __name__ == "__main__":
     import argparse
     parser = argparse.ArgumentParser(description='Apply antenna factor')
-    parser.add_argument('-s', dest='spectrumanalyzer', required=True,
-            help="CSV file containing spectrum analyzer reading.",
-            metavar='FILE', type=lambda x: _is_valid_file(parser,x))
-    parser.add_argument('-a', dest='antennafactor', required=True,
-            help="CSV file containing antenna factor data.",
-            metavar='FILE', type=lambda x: _is_valid_file(parser,x))
-    parser.add_argument('-c', '--cableloss', dest='cableloss', required=False,
-            help="CSV file containing cable loss data.",
-            metavar='FILE', type=lambda x: _is_valid_file(parser,x))
+    parser.add_argument(
+        '-s', dest='spectrumanalyzer', required=True,
+        help="CSV file containing spectrum analyzer reading.",
+        metavar='FILE', type=lambda x: _is_valid_file(parser, x))
+    parser.add_argument(
+        '-a', dest='antennafactor', required=True,
+        help="CSV file containing antenna factor data.",
+        metavar='FILE', type=lambda x: _is_valid_file(parser, x))
+    parser.add_argument(
+        '-c', '--cableloss', dest='cableloss', required=False,
+        help="CSV file containing cable loss data.",
+        metavar='FILE', type=lambda x: _is_valid_file(parser, x))
     args = parser.parse_args()
 
     # Open the CSV files and read the data into np.array
@@ -135,31 +149,33 @@ if __name__ == "__main__":
     antenna_factors = _read_csv_file(args.antennafactor, 1.0e6)
 
     # Print some info about the arrays
-    print('Spectrum analyzer data contains {num_points} points'
-            ' from {fstart:1.3e} Hz to {fstop:1.3e} Hz'.format(
-            num_points = analyzer_readings.shape[1],
-            fstart = analyzer_readings[0,0],
-            fstop = analyzer_readings[0,-1]))
-    print('Antenna factor data contains {num_points} points'
-            ' from {fstart:1.3e} Hz to {fstop:1.3e} Hz'.format(
-            num_points = antenna_factors.shape[1],
-            fstart = antenna_factors[0,0],
-            fstop = antenna_factors[0,-1]))
+    print(
+        'Spectrum analyzer data contains {num_points} points'
+        ' from {fstart:1.3e} Hz to {fstop:1.3e} Hz'.format(
+            num_points=analyzer_readings.shape[1],
+            fstart=analyzer_readings[0, 0],
+            fstop=analyzer_readings[0, -1]))
+    print(
+        'Antenna factor data contains {num_points} points'
+        ' from {fstart:1.3e} Hz to {fstop:1.3e} Hz'.format(
+            num_points=antenna_factors.shape[1],
+            fstart=antenna_factors[0, 0],
+            fstop=antenna_factors[0, -1]))
 
     # Determine if cable loss data was provided
     if args.cableloss:
         cable_losses = _read_csv_file(args.cableloss, 1e6)
-        print('Cable loss data contains {num_points} points'
-                ' from {fstart:1.3e} Hz to {fstop:1.3e} Hz'.format(
-                num_points = cable_losses.shape[1],
-                fstart = cable_losses[0,0],
-                fstop = cable_losses[0,-1]))
+        print(
+            'Cable loss data contains {num_points} points'
+            ' from {fstart:1.3e} Hz to {fstop:1.3e} Hz'.format(
+                num_points=cable_losses.shape[1],
+                fstart=cable_losses[0, 0],
+                fstop=cable_losses[0, -1]))
 
         # Apply the antenna factor and cable loss to the spectrum analyzer
         # readings
-        incident_field = apply_antenna_factor(analyzer_readings,
-                antenna_factors, cable_losses)
+        incident_field = apply_antenna_factor(
+            analyzer_readings, antenna_factors, cable_losses)
     else:
-        incident_field = apply_antenna_factor(analyzer_readings,
-                antenna_factors)
-
+        incident_field = apply_antenna_factor(
+            analyzer_readings, antenna_factors)
