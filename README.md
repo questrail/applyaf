@@ -1,6 +1,6 @@
 # applyaf
 
-**applyaf** is a Python module that applies frequency dependent antenna
+applyaf is a Python module that applies frequency dependent antenna
  factors and cable losses to spectrum analyzer readings. The antenna
 factors and cable losses are interpolated onto the spectrum analyzer
 readings.
@@ -35,6 +35,11 @@ interpolated and applied to the given data set.
 3. If the code is generalized, should this be wrapped into the
 [siganalysis] project or left on its own?
 
+# Contributing
+
+applyaf is developed using the [git workflow], so feel free to fork,
+branch, and contribute.
+
 # License
 
 applyaf is released under the MIT license. Please see the `LICENSE.txt`
@@ -42,3 +47,4 @@ file for more information.
 
 [numpy]: http://www.numpy.org
 [siganalysis]: https://github.com/questrail/siganalysis
+[git workflow]: http://nvie.com/posts/a-successful-git-branching-model/
