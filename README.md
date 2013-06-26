@@ -1,9 +1,10 @@
 # applyaf
 
 applyaf is a Python module that applies frequency dependent antenna
- factors and cable losses to spectrum analyzer readings. The antenna
-factors and cable losses are interpolated onto the spectrum analyzer
-readings.
+factors and cable losses to spectrum analyzer readings in order to
+calculate the incident field. Any duplicate frequency entries in the
+antenna factors or cable losses data are removed before interpolating
+the frequencies to match those of the spectrum analyzer readings.
 
 # Inputs
 
