@@ -1,11 +1,15 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-"""
-applyaf.py
+# Copyright (c) 2013 The applyaf developers. All rights reserved.
+# Project site: https://github.com/questrail/applyaf
+# Use of this source code is governed by a MIT-style license that
+# can be found in the LICENSE.txt file for the project.
+"""Apply the antenna factor and cable loss to freq dependent data.
 
-Apply the antenna factor and cable loss data to spectrum
-analyzer measurements.
-
+Apply the antenna factor and cable loss data to spectrum analyzer
+measurements or other data. The antenna factor and cable loss arrays will
+be interpolated onto the same frequencies as found in the given analyzer
+data.
 """
 
 # Try to future proof code so that it's Python 3.x ready
@@ -39,6 +43,7 @@ def _read_csv_file(filename, freq_unit_multiplier):
     with open(filename) as f:
         # Determine if the CSV file has a header row
         has_header = csv.Sniffer().has_header(f.read(1024))
+        #print('Header') if has_header else print('No header')
         rows_to_skip = 1 if has_header else 0
         # Go back to the file's beginning and read it into np.array
         f.seek(0)
