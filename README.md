@@ -6,7 +6,7 @@ calculate the incident field. Any duplicate frequency entries in the
 antenna factors or cable losses data are removed before interpolating
 the frequencies to match those of the spectrum analyzer readings.
 
-# Inputs
+## Inputs
 
 Three csv files containing the following are required inputs:
 
@@ -21,11 +21,11 @@ Each CSV file should contain data in two columns:
 
 The amplitude is expected to be in dB.
  
-# Requirements
+## Requirements
 
 * [numpy][]
 
-# Future Improvements
+## Future Improvements
 
 Some thoughts for future improvements include:
 
@@ -36,16 +36,41 @@ interpolated and applied to the given data set.
 3. If the code is generalized, should this be wrapped into the
 [siganalysis] project or left on its own?
 
-# Contributing
+## Contributing
 
-applyaf is developed using the [git workflow], so feel free to fork,
-branch, and contribute.
+[applyaf] is developed using [git-flow], which are "git extensions to
+provide high-level repository operations for [Vincent Driessen's
+branching model][nvie-git]." To contirbute, [install git-flow], fork
+[applyaf], and then run:
+
+```bash
+$ git clone git@github.com:<username>/applyaf.git
+$ cd applyaf
+$ git branch master origin/master
+$ git flow init -d
+$ git flow feature start <your_feature>
+```
+
+When you're done coding and committing the changes for `your_feature`,
+issue:
+
+```bash
+$ git flow feature publish <your_feature>
+```
+
+Then open a pull request to `your_feature` branch.
+
 
 # License
 
-applyaf is released under the MIT license. Please see the `LICENSE.txt`
-file for more information.
+[applyaf] is released under the MIT license. Please see the
+[LICENSE.txt] file for more information.
 
+[applyaf]: https://github.com/questrail/applyaf
 [numpy]: http://www.numpy.org
 [siganalysis]: https://github.com/questrail/siganalysis
 [git workflow]: http://nvie.com/posts/a-successful-git-branching-model/
+[LICENSE.txt]: https://github.com/questrail/applyaf/blob/develop/LICENSE.txt
+[git-flow]: https://github.com/nvie/gitflow
+[nvie-git]: http://nvie.com/posts/a-successful-git-branching-model/
+[install git-flow]: https://github.com/nvie/gitflow/wiki/Installation
