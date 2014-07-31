@@ -20,10 +20,12 @@ Each CSV file should contain data in two columns:
 2. Amplitude
 
 The amplitude is expected to be in dB.
- 
+
 ## Requirements
 
-* [numpy][]
+- [numpy][]
+- `csv` module from the [Python Standard Library][]
+- `os` module from the [Python Standard Library][]
 
 ## Future Improvements
 
@@ -34,32 +36,25 @@ convert as needed. Should this be a per-file setting?
 2. Generalize the code to handle a variable number (>3) of data to be
 interpolated and applied to the given data set.
 3. If the code is generalized, should this be wrapped into the
-[siganalysis] project or left on its own?
+[siganalysis][] project or left on its own?
 
 ## Contributing
 
-[applyaf] is developed using [git-flow], which are "git extensions to
-provide high-level repository operations for [Vincent Driessen's
-branching model][nvie-git]." To contirbute, [install git-flow], fork
-[applyaf], and then run:
+[applyaf][] is developed using [Scott Chacon][]'s [GitHub Flow][]. To
+contribute, fork [applyaf][], create a feature branch, and then submit
+a pull request.  [GitHub Flow][] is summarized as:
 
-```bash
-$ git clone git@github.com:<username>/applyaf.git
-$ cd applyaf
-$ git branch master origin/master
-$ git flow init -d
-$ git flow feature start <your_feature>
-```
-
-When you're done coding and committing the changes for `your_feature`,
-issue:
-
-```bash
-$ git flow feature publish <your_feature>
-```
-
-Then open a pull request to `your_feature` branch.
-
+- Anything in the `master` branch is deployable
+- To work on something new, create a descriptively named branch off of
+  `master` (e.g., `new-oauth2-scopes`)
+- Commit to that branch locally and regularly push your work to the same
+  named branch on the server
+- When you need feedback or help, or you think the brnach is ready for
+  merging, open a [pull request][].
+- After someone else has reviewed and signed off on the feature, you can
+  merge it into master.
+- Once it is merged and pushed to `master`, you can and *should* deploy
+  immediately.
 
 # License
 
@@ -67,10 +62,10 @@ Then open a pull request to `your_feature` branch.
 [LICENSE.txt] file for more information.
 
 [applyaf]: https://github.com/questrail/applyaf
-[numpy]: http://www.numpy.org
-[siganalysis]: https://github.com/questrail/siganalysis
-[git workflow]: http://nvie.com/posts/a-successful-git-branching-model/
+[github flow]: http://scottchacon.com/2011/08/31/github-flow.html
 [LICENSE.txt]: https://github.com/questrail/applyaf/blob/develop/LICENSE.txt
-[git-flow]: https://github.com/nvie/gitflow
-[nvie-git]: http://nvie.com/posts/a-successful-git-branching-model/
-[install git-flow]: https://github.com/nvie/gitflow/wiki/Installation
+[numpy]: http://www.numpy.org
+[pull request]: https://help.github.com/articles/using-pull-requests
+[python standard library]: https://docs.python.org/2/library/
+[scott chacon]: http://scottchacon.com/about.html
+[siganalysis]: https://github.com/questrail/siganalysis
