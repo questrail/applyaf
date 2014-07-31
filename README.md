@@ -1,5 +1,7 @@
 # applyaf
 
+[![Build Status][travis image]][travis link]
+
 applyaf is a Python module that applies frequency dependent antenna
 factors and cable losses to spectrum analyzer readings in order to
 calculate the incident field. Any duplicate frequency entries in the
@@ -69,3 +71,5 @@ a pull request.  [GitHub Flow][] is summarized as:
 [python standard library]: https://docs.python.org/2/library/
 [scott chacon]: http://scottchacon.com/about.html
 [siganalysis]: https://github.com/questrail/siganalysis
+[travis image]: https://travis-ci.org/questrail/applyaf.png
+[travis link]: https://travis-ci.org/questrail/applyaf
