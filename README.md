@@ -2,6 +2,7 @@
 
 [![Build Status][travis image]][travis link]
 [![PyPi Version][pypi ver image]][pypi ver link]
+[![Coverage Status][coveralls image]][coveralls link]
 
 applyaf is a Python module that applies frequency dependent antenna
 factors and cable losses to spectrum analyzer readings in order to
@@ -65,6 +66,8 @@ a pull request.  [GitHub Flow][] is summarized as:
 [LICENSE.txt] file for more information.
 
 [applyaf]: https://github.com/questrail/applyaf
+[coveralls image]: https://coveralls.io/repos/questrail/applyaf/badge.png
+[coveralls link]: https://coveralls.io/r/questrail/applyaf
 [github flow]: http://scottchacon.com/2011/08/31/github-flow.html
 [LICENSE.txt]: https://github.com/questrail/applyaf/blob/develop/LICENSE.txt
 [numpy]: http://www.numpy.org
