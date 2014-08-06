@@ -72,8 +72,8 @@ a pull request.  [GitHub Flow][] is summarized as:
 [LICENSE.txt]: https://github.com/questrail/applyaf/blob/develop/LICENSE.txt
 [numpy]: http://www.numpy.org
 [pull request]: https://help.github.com/articles/using-pull-requests
-[pypi ver image]: https://badge.fury.io/py/sdfascii.png
-[pypi ver link]: http://badge.fury.io/py/sdfascii
+[pypi ver image]: https://badge.fury.io/py/applyaf.png
+[pypi ver link]: http://badge.fury.io/py/applyaf
 [python standard library]: https://docs.python.org/2/library/
 [scott chacon]: http://scottchacon.com/about.html
 [siganalysis]: https://github.com/questrail/siganalysis
