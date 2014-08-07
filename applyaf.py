@@ -25,6 +25,8 @@ import os.path
 # Data analysis related imports
 import numpy as np
 
+__version__ = '0.2'
+
 
 def _is_valid_file(parser, arg):
     """Determine if the argument is an existing file
@@ -43,7 +45,7 @@ def _read_csv_file(filename, freq_unit_multiplier):
     with open(filename) as f:
         # Determine if the CSV file has a header row
         has_header = csv.Sniffer().has_header(f.read(1024))
-        #print('Header') if has_header else print('No header')
+        # print('Header') if has_header else print('No header')
         rows_to_skip = 1 if has_header else 0
         # Go back to the file's beginning and read it into np.array
         f.seek(0)
