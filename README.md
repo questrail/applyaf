@@ -1,14 +1,16 @@
 # applyaf
 
-[![Build Status][travis image]][travis link]
 [![PyPi Version][pypi ver image]][pypi ver link]
+[![Build Status][travis image]][travis link]
 [![Coverage Status][coveralls image]][coveralls link]
+[![License Badge][license image]][LICENSE.txt]
 
-applyaf is a Python (2.6+/3.3+) module that applies frequency dependent
-antenna factors and cable losses to spectrum analyzer readings in order
-to calculate the incident field. Any duplicate frequency entries in the
-antenna factors or cable losses data are removed before interpolating
-the frequencies to match those of the spectrum analyzer readings.
+[applyaf][] is a Python (2.6+/3.3+) module that applies frequency
+dependent antenna factors and cable losses to spectrum analyzer readings
+in order to calculate the incident field. Any duplicate frequency
+entries in the antenna factors or cable losses data are removed before
+interpolating the frequencies to match those of the spectrum analyzer
+readings.
 
 ## Inputs
 
@@ -66,16 +68,17 @@ a pull request.  [GitHub Flow][] is summarized as:
 [LICENSE.txt] file for more information.
 
 [applyaf]: https://github.com/questrail/applyaf
-[coveralls image]: https://coveralls.io/repos/questrail/applyaf/badge.png
+[coveralls image]: http://img.shields.io/coveralls/questrail/applyaf/master.svg
 [coveralls link]: https://coveralls.io/r/questrail/applyaf
 [github flow]: http://scottchacon.com/2011/08/31/github-flow.html
 [LICENSE.txt]: https://github.com/questrail/applyaf/blob/develop/LICENSE.txt
+[license image]: http://img.shields.io/pypi/l/applyaf.svg
 [numpy]: http://www.numpy.org
 [pull request]: https://help.github.com/articles/using-pull-requests
-[pypi ver image]: https://badge.fury.io/py/applyaf.png
-[pypi ver link]: http://badge.fury.io/py/applyaf
+[pypi ver image]: http://img.shields.io/pypi/v/applyaf.svg
+[pypi ver link]: https://pypi.python.org/pypi/applyaf
 [python standard library]: https://docs.python.org/2/library/
 [scott chacon]: http://scottchacon.com/about.html
 [siganalysis]: https://github.com/questrail/siganalysis
-[travis image]: https://travis-ci.org/questrail/applyaf.png
+[travis image]: http://img.shields.io/travis/questrail/applyaf/master.svg
 [travis link]: https://travis-ci.org/questrail/applyaf

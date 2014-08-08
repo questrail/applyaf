@@ -45,7 +45,7 @@ setup(
     author_email='matthew@questrail.com',
     py_modules=['applyaf'],
     url='http://github.com/questrail/applyaf',
-    license='LICENSE.txt',
+    license='MIT',
     description='Apply antenna factor and cable loss to'
         + 'spectrum analyzer measurements',
     long_description=long_description,
