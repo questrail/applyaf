@@ -12,7 +12,7 @@ def lint():
 @task(lint)
 def test():
     """Lint, unit test, and check setup.py"""
-    run("nosetests")
+    run("nosetests --with-coverage --cover-package=applyaf")
     run("python setup.py check")
 
 

@@ -3,6 +3,14 @@ This file contains all notable changes to the [applyaf][] project.
 
 ## Unreleased
 
+## v0.3.0 - 2015-08-20
+
+### Changed
+- Migrated Travis-CI from legacy to container-based
+  infrastructure
+- Added coverage to requirements.txt and updated `inv test` task to
+  run coverage as well.
+
 ## v0.2.3 - 2015-08-20
 
 ### Changed
