@@ -3,10 +3,14 @@ This file contains all notable changes to the [applyaf][] project.
 
 ## Unreleased
 
+## v0.2.3 - 2015-08-20
+
+### Changed
+- Updated pip requirements including numpy from 1.8.1 to 1.9.2
 
 ## v0.2.2 - 2014-08-08
 
-### Enhancements
+### Changed
 - Moved AUTHORS.txt to AUTHORS.md
 - Moved CHANGES.md to CHANGELOG.md
 - Switched badges to shields.io
@@ -15,7 +19,7 @@ This file contains all notable changes to the [applyaf][] project.
 
 ## v0.2.1 - 2014-08-07
 
-### Enhancements
+### Added
 - Create release script [#2][]
 
 
