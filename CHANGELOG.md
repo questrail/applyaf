@@ -3,6 +3,12 @@ This file contains all notable changes to the [applyaf][] project.
 
 ## Unreleased
 
+## v0.4.0 - 2017-03-24
+
+### Added
+- Ability to remove antenna factors and cable losses
+
+
 ## v0.3.0 - 2015-08-20
 
 ### Changed
