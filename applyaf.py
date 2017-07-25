@@ -14,7 +14,6 @@ data.
 
 # Try to future proof code so that it's Python 3.x ready
 from __future__ import print_function
-from __future__ import unicode_literals
 from __future__ import division
 from __future__ import absolute_import
 
