@@ -3,6 +3,10 @@ This file contains all notable changes to the [applyaf][] project.
 
 ## Unreleased
 
+## v1.0.0 - 2017-11-16
+- Remove Py2.6/2.7 from Travis-CI.
+- Remove if main, since only run as library.
+
 ## v0.4.0 - 2017-03-24
 
 ### Added

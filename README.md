@@ -5,12 +5,11 @@
 [![Coverage Status][coveralls image]][coveralls link]
 [![License Badge][license image]][LICENSE.txt]
 
-[applyaf][] is a Python (2.6+/3.3+) module that applies frequency
-dependent antenna factors and cable losses to spectrum analyzer readings
-in order to calculate the incident field. Any duplicate frequency
-entries in the antenna factors or cable losses data are removed before
-interpolating the frequencies to match those of the spectrum analyzer
-readings.
+[applyaf][] is a Python 3.4+ module that applies frequency dependent
+antenna factors and cable losses to spectrum analyzer readings in order
+to calculate the incident field. Any duplicate frequency entries in the
+antenna factors or cable losses data are removed before interpolating
+the frequencies to match those of the spectrum analyzer readings.
 
 ## Inputs
 
@@ -45,6 +44,11 @@ interpolated and applied to the given data set.
 [siganalysis][] project or left on its own?
 
 ## Contributing
+
+To create a Python 3 virtualenv and then use it via virtualenvwrapper:
+
+    $ python3 -m venv ~/.virtualenv/applayf
+    $ workon applyaf
 
 [applyaf][] is developed using [Scott Chacon][]'s [GitHub Flow][]. To
 contribute, fork [applyaf][], create a feature branch, and then submit
