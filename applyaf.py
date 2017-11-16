@@ -19,7 +19,7 @@ import os.path
 # Data analysis related imports
 import numpy as np
 
-__version__ = '1.0.0'
+__version__ = '1.0.1'
 
 
 def _is_valid_file(parser, arg):
