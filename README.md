@@ -45,10 +45,16 @@ interpolated and applied to the given data set.
 
 ## Contributing
 
-To create a Python 3 virtualenv and then use it via virtualenvwrapper:
+Use the following commands to create a Python 3.9.9 virtualenv using [pyenv][]
+and [pyenv-virtualenv][], install the requirements in the virtualenv named
+`applyaf`, and list the available [Invoke][] tasks.
 
-    $ python3 -m venv ~/.virtualenv/applayf
-    $ workon applyaf
+```bash
+$ pyenv virtualenv 3.9.9 applyaf
+$ pyenv activate applyaf
+$ pip install -r requirements.txt
+$ inv -l
+```
 
 [applyaf][] is developed using [Scott Chacon][]'s [GitHub Flow][]. To
 contribute, fork [applyaf][], create a feature branch, and then submit
@@ -68,17 +74,20 @@ a pull request.  [GitHub Flow][] is summarized as:
 
 # License
 
-[applyaf] is released under the MIT license. Please see the
-[LICENSE.txt] file for more information.
+[applyaf][] is released under the MIT license. Please see the
+[LICENSE.txt][] file for more information.
 
 [applyaf]: https://github.com/questrail/applyaf
 [coveralls image]: http://img.shields.io/coveralls/questrail/applyaf/master.svg
 [coveralls link]: https://coveralls.io/r/questrail/applyaf
 [github flow]: http://scottchacon.com/2011/08/31/github-flow.html
+[invoke]: https://www.pyinvoke.org/
 [LICENSE.txt]: https://github.com/questrail/applyaf/blob/develop/LICENSE.txt
 [license image]: http://img.shields.io/pypi/l/applyaf.svg
 [numpy]: http://www.numpy.org
 [pull request]: https://help.github.com/articles/using-pull-requests
+[pyenv]: https://github.com/pyenv/pyenv
+[pyenv-virtualenv]: https://github.com/pyenv/pyenv-virtualenv
 [pypi ver image]: http://img.shields.io/pypi/v/applyaf.svg
 [pypi ver link]: https://pypi.python.org/pypi/applyaf
 [python standard library]: https://docs.python.org/2/library/

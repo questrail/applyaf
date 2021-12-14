@@ -3,6 +3,10 @@ This file contains all notable changes to the [applyaf][] project.
 
 ## Unreleased
 
+## v1.1.0 - 2021-12-14
+- Updated requirements
+- Add newer versions of Python for testing.
+
 ## v1.0.1 - 2017-11-16
 - Update setup.py
 

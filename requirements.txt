@@ -1,7 +1,7 @@
-coverage==4.4.2
-flake8==3.5.0
-invoke==0.21.0
+coverage==6.2
+flake8==4.0.1
+invoke==1.6.0
 nose==1.3.7
-numpy==1.13.3
-pep8-naming==0.4.1
-twine==1.9.1
+numpy==1.21.4
+pep8-naming==0.12.1
+twine==3.7.1

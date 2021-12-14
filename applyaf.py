@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 # Copyright (c) 2013-2017 The applyaf developers. All rights reserved.
 # Project site: https://github.com/questrail/applyaf
@@ -19,7 +18,7 @@ import os.path
 # Data analysis related imports
 import numpy as np
 
-__version__ = '1.0.1'
+__version__ = '1.1.0'
 
 
 def _is_valid_file(parser, arg):

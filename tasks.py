@@ -6,7 +6,7 @@ TESTPYPI = "https://testpypi.python.org/pypi"
 @task
 def lint(ctx):
     """Run flake8 to lint code"""
-    run("python3 setup.py flake8")
+    run("flake8")
 
 
 @task(lint)
