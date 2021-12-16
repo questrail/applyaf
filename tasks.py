@@ -33,7 +33,8 @@ def release(ctx, deploy=False, test=False, version=''):
             run("git tag -a v{ver} -m 'v{ver}'".format(ver=version))
             run("git push")
             run("git push origin --tags")
-            run("python3 setup.py register sdist upload")
+            run("python3 -m build")
+            run("python3 -m twine upload dist/*")
     else:
         print("* Have you updated the version in applyaf.py?")
         print("* Have you updated CHANGELOG.md?")

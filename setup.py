@@ -1,8 +1,14 @@
+"""
+Dynamic setup file.
+"""
 import codecs
 import os
 import re
 
-from setuptools import setup
+import setuptools
+
+with open("README.md", "r", encoding="utf-8") as fh:
+    long_description = fh.read()
 
 here = os.path.abspath(os.path.dirname(__file__))
 
@@ -33,23 +39,23 @@ def find_version(*file_paths):
     raise RuntimeError("Unable to find version string.")
 
 
-try:
-    import pypandoc
-    long_description = pypandoc.convert('README.md', 'rst')
-except(IOError, ImportError):
-    long_description = open('README.md').read()
-
-setup(
+setuptools.setup(
     name='applyaf',
-    version=find_version('applyaf.py'),
+    version=find_version('src/applyaf/applyaf.py'),
     author='Matthew Rankin',
     author_email='matthew@questrail.com',
-    py_modules=['applyaf'],
-    url='http://github.com/questrail/applyaf',
-    license='MIT',
     description='Apply antenna factor and cable loss to'
         + 'spectrum analyzer measurements',
     long_description=long_description,
+    long_description_content_type="text/markdown",
+    url='http://github.com/questrail/applyaf',
+    project_urls={
+        "Bug Tracker": "https://github.com/questrail/applyaf/issues",
+    },
+    package_dir={"": "src"},
+    packages=setuptools.find_packages(where="src"),
+    python_requires=">=3.6",
+    license='MIT',
     requires=['numpy (>=1.6.0)'],
     classifiers=[
         'Programming Language :: Python',
