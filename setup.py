@@ -53,7 +53,7 @@ setuptools.setup(
         "Bug Tracker": "https://github.com/questrail/applyaf/issues",
     },
     package_dir={"": "src"},
-    packages=setuptools.find_packages(where="src"),
+    py_modules=["applyaf"],
     python_requires=">=3.6",
     license='MIT',
     requires=['numpy (>=1.6.0)'],
