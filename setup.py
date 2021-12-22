@@ -41,11 +41,11 @@ def find_version(*file_paths):
 
 setuptools.setup(
     name='applyaf',
-    version=find_version('src/applyaf/applyaf.py'),
+    version=find_version('src', 'applyaf', '__init__.py'),
     author='Matthew Rankin',
     author_email='matthew@questrail.com',
-    description='Apply antenna factor and cable loss to'
-        + 'spectrum analyzer measurements',
+    description='Apply antenna factor and cable loss to' +
+                'spectrum analyzer measurements',
     long_description=long_description,
     long_description_content_type="text/markdown",
     url='http://github.com/questrail/applyaf',

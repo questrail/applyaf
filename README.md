@@ -56,6 +56,8 @@ $ pip install -r requirements.txt
 $ inv -l
 ```
 
+### Submitting Pull Requests
+
 [applyaf][] is developed using [Scott Chacon][]'s [GitHub Flow][]. To
 contribute, fork [applyaf][], create a feature branch, and then submit
 a pull request.  [GitHub Flow][] is summarized as:
