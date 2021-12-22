@@ -41,7 +41,7 @@ def find_version(*file_paths):
 
 setuptools.setup(
     name='applyaf',
-    version=find_version('src', 'applyaf', '__init__.py'),
+    version=find_version('src', '__init__.py'),
     author='Matthew Rankin',
     author_email='matthew@questrail.com',
     description='Apply antenna factor and cable loss to' +
