@@ -3,7 +3,7 @@ This file contains all notable changes to the [applyaf][] project.
 
 ## Unreleased
 
-## v1.2.0 - 2021-12-21
+## v1.2.1 - 2021-12-21
 - Fix package directory structure.
 
 ## v1.1.0 - 2021-12-14
