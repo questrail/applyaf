@@ -18,6 +18,8 @@ import os.path
 # Data analysis related imports
 import numpy as np
 
+__version__ = '1.2.0'
+
 
 def _is_valid_file(parser, arg):
     """Determine if the argument is an existing file

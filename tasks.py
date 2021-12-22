@@ -12,10 +12,8 @@ def lint(ctx):
 @task(lint)
 def test(ctx):
     """Lint and run unit tests"""
-    cmd = "{} {}".format(
-        "nosetests",
-        "--with-coverage --cover-erase --cover-package=applyaf --cover-html")
-    run(cmd)
+    args = "--with-coverage --cover-erase --cover-package=applyaf --cover-html"
+    run(f"nosetests {args}")
 
 
 @task()
