@@ -3,6 +3,11 @@ This file contains all notable changes to the [applyaf][] project.
 
 ## Unreleased
 
+## v1.3.0 - 2022-04-21
+- Add function to apply the antenna factors and cable losses and return the
+    antenna factors at the analyzer frequencies and the cable losses at the
+    analyzer frequencies in addition to the returning the incident field.
+
 ## v1.2.2 - 2021-12-21
 - Fix package directory structure.
 

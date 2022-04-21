@@ -18,7 +18,7 @@ import os.path
 # Data analysis related imports
 import numpy as np
 
-__version__ = '1.2.2'
+__version__ = '1.3.0'
 
 
 def _is_valid_file(parser, arg):
@@ -118,6 +118,55 @@ def apply_antenna_factor(analyzer_readings, antenna_factors,
     Returns:
         A 1D numpy structured array containing the incident field.
     """
+    incident_field, antenna_factors_at_analyzer_frequencies, \
+    cable_losses_at_analyzer_frequencies =
+    apply_antenna_factor_show_af_cl(analyzer_readings, antenna_factors,
+                                    cable_losses, keep_max)
+    return incident_field
+
+
+def apply_antenna_factor_show_af_cl(analyzer_readings, antenna_factors,
+                         cable_losses=False, keep_max=True):
+    """Apply the antenna factor and cable losses to the input data and show the
+    antenna factors and cable losses at the analyzer frequencies in addition to
+    returning the incident field.
+
+    Applies the frequency dependent antenna factor and, optionally, the cable
+    losses to a given input data (typically spectrum analyzer readings). Before
+    interpolating the frequencies of the antenna factors and cable losses onto
+    the dataset, any duplicate frequency entries are removed and either the
+    minimum or maximum amplitude value is kept depending on the user's
+    selection.
+
+    This is used to calculate the incident field which is defined as either:
+
+        E(dBuV/m) = Vsa(dBuV) + AF(dB/m) + cable_loss(dB)
+        or
+        H(dBuA/m) = Vsa(dBuV) - AF(dBohm/m) + cable_loss(dB)
+
+
+    as given by Eqn 7.62 in *Introduction to Electromagnetic Compatibility* 2nd
+    edition by Clayton Paul.
+
+    Args:
+        analyzer_readings: A 1D numpy structured array containing the fields
+            'frequency' and 'amplitude_db'.
+        antenna_factors: A 1D numpy structured array containing the fields
+            'frequency' and 'amplitude_db'.
+        cables_losses: A 1D numpy structured array containing the fields
+            'frequency' and 'amplitude_db'.
+        keep_max: A boolean determining whether the max or min amplitudes are
+            kept whenever duplicate frequency entries are found in the
+            antenna_factors or cable_losses arrays.
+
+    Returns:
+        A tuple containing:
+            A 1D numpy structured array containing the incident field.
+            A 1D numpy structured array containing the antenna factors at the
+                analyzer frequencies.
+            A 1D numpy structured array containing the cable losses at the
+                analyzer frequencies.
+    """
 
     # Remove duplicates and keep the max or min
     analyzer_readings_no_duplicates = _remove_duplicate_frequencies(
@@ -154,7 +203,9 @@ def apply_antenna_factor(analyzer_readings, antenna_factors,
         incident_field['amplitude_db'] += \
             antenna_factors_at_analyzer_frequencies
 
-    return incident_field
+    return (incident_field,
+            antenna_factors_at_analyzer_frequencies,
+            cable_losses_at_analyzer_frequencies)
 
 
 def remove_antenna_factor(analyzer_readings, antenna_factors,
