@@ -18,7 +18,7 @@ import os.path
 # Data analysis related imports
 import numpy as np
 
-__version__ = '1.3.0'
+__version__ = '1.3.1'
 
 
 def _is_valid_file(parser, arg):
@@ -119,7 +119,7 @@ def apply_antenna_factor(analyzer_readings, antenna_factors,
         A 1D numpy structured array containing the incident field.
     """
     incident_field, antenna_factors_at_analyzer_frequencies, \
-    cable_losses_at_analyzer_frequencies =
+    cable_losses_at_analyzer_frequencies = \
     apply_antenna_factor_show_af_cl(analyzer_readings, antenna_factors,
                                     cable_losses, keep_max)
     return incident_field
@@ -162,10 +162,10 @@ def apply_antenna_factor_show_af_cl(analyzer_readings, antenna_factors,
     Returns:
         A tuple containing:
             A 1D numpy structured array containing the incident field.
-            A 1D numpy structured array containing the antenna factors at the
-                analyzer frequencies.
-            A 1D numpy structured array containing the cable losses at the
-                analyzer frequencies.
+            A 1D numpy array containing the antenna factors at the analyzer
+                frequencies.
+            A 1D numpy array containing the cable losses at the analyzer
+                frequencies.
     """
 
     # Remove duplicates and keep the max or min

@@ -3,6 +3,9 @@ This file contains all notable changes to the [applyaf][] project.
 
 ## Unreleased
 
+## v1.3.1 - 2022-04-21
+- Fixed error in apply antenna factors frequency.
+
 ## v1.3.0 - 2022-04-21
 - Add function to apply the antenna factors and cable losses and return the
     antenna factors at the analyzer frequencies and the cable losses at the
