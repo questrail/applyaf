@@ -94,8 +94,11 @@ def apply_antenna_factor(analyzer_readings, antenna_factors,
     minimum or maximum amplitude value is kept depending on the user's
     selection.
 
-    This is used to calculate the incident field which is defined as:
-        E(dBuV/m) = AF(dB) + Vsa(dBuV) + cable_loss(dB)
+    This is used to calculate the incident field which is defined as either:
+
+        E(dBuV/m) = Vsa(dBuV) + AF(dB/m) + cable_loss(dB)
+        or
+        H(dBuA/m) = Vsa(dBuV) - AF(dBohm/m) + cable_loss(dB)
 
 
     as given by Eqn 7.62 in *Introduction to Electromagnetic Compatibility* 2nd
