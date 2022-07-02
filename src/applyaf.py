@@ -119,14 +119,14 @@ def apply_antenna_factor(analyzer_readings, antenna_factors,
         A 1D numpy structured array containing the incident field.
     """
     incident_field, antenna_factors_at_analyzer_frequencies, \
-    cable_losses_at_analyzer_frequencies = \
-    apply_antenna_factor_show_af_cl(analyzer_readings, antenna_factors,
-                                    cable_losses, keep_max)
+        cable_losses_at_analyzer_frequencies = \
+        apply_antenna_factor_show_af_cl(analyzer_readings, antenna_factors,
+                                        cable_losses, keep_max)
     return incident_field
 
 
 def apply_antenna_factor_show_af_cl(analyzer_readings, antenna_factors,
-                         cable_losses=False, keep_max=True):
+                                    cable_losses=False, keep_max=True):
     """Apply the antenna factor and cable losses to the input data and show the
     antenna factors and cable losses at the analyzer frequencies in addition to
     returning the incident field.
