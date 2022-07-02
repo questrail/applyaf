@@ -11,6 +11,7 @@ to calculate the incident field. Any duplicate frequency entries in the
 antenna factors or cable losses data are removed before interpolating
 the frequencies to match those of the spectrum analyzer readings.
 
+
 ## Inputs
 
 Three csv files containing the following are required inputs:
@@ -26,11 +27,13 @@ Each CSV file should contain data in two columns:
 
 The amplitude is expected to be in dB.
 
+
 ## Requirements
 
 - [numpy][]
 - `csv` module from the [Python Standard Library][]
 - `os` module from the [Python Standard Library][]
+
 
 ## Future Improvements
 
@@ -43,7 +46,21 @@ interpolated and applied to the given data set.
 3. If the code is generalized, should this be wrapped into the
 [siganalysis][] project or left on its own?
 
+
 ## Contributing
+
+Contributions are welcome! To contribute please:
+
+1. Fork the repository
+2. Create a feature branch
+3. Add code and tests
+4. Pass lint and tests
+5. Submit a [pull request][]
+
+
+## Development Setup
+
+### Development Setup Using pyenv
 
 Use the following commands to create a Python 3.9.9 virtualenv using [pyenv][]
 and [pyenv-virtualenv][], install the requirements in the virtualenv named
@@ -56,25 +73,7 @@ $ pip install -r requirements.txt
 $ inv -l
 ```
 
-### Submitting Pull Requests
-
-[applyaf][] is developed using [Scott Chacon][]'s [GitHub Flow][]. To
-contribute, fork [applyaf][], create a feature branch, and then submit
-a pull request.  [GitHub Flow][] is summarized as:
-
-- Anything in the `master` branch is deployable
-- To work on something new, create a descriptively named branch off of
-  `master` (e.g., `new-oauth2-scopes`)
-- Commit to that branch locally and regularly push your work to the same
-  named branch on the server
-- When you need feedback or help, or you think the brnach is ready for
-  merging, open a [pull request][].
-- After someone else has reviewed and signed off on the feature, you can
-  merge it into master.
-- Once it is merged and pushed to `master`, you can and *should* deploy
-  immediately.
-
-# License
+## License
 
 [applyaf][] is released under the MIT license. Please see the
 [LICENSE.txt][] file for more information.
@@ -93,7 +92,6 @@ a pull request.  [GitHub Flow][] is summarized as:
 [pypi ver image]: http://img.shields.io/pypi/v/applyaf.svg
 [pypi ver link]: https://pypi.python.org/pypi/applyaf
 [python standard library]: https://docs.python.org/2/library/
-[scott chacon]: http://scottchacon.com/about.html
 [siganalysis]: https://github.com/questrail/siganalysis
 [travis image]: http://img.shields.io/travis/questrail/applyaf/master.svg
 [travis link]: https://travis-ci.org/questrail/applyaf
