@@ -14,9 +14,11 @@ data.
 # Standard module imports
 import csv
 import os.path
+from typing import Optional
 
 # Data analysis related imports
 import numpy as np
+import numpy.typing as npt
 
 __version__ = '1.3.1'
 
@@ -31,7 +33,7 @@ def _is_valid_file(parser, arg):
         return arg
 
 
-def _read_csv_file(filename, freq_unit_multiplier):
+def _read_csv_file(filename: str, freq_unit_multiplier: float) -> npt.NDArray:
     """Read csv file into a numpy array
     """
     # FIXME: Test a file with blank lines in the CSV file.
@@ -52,7 +54,8 @@ def _read_csv_file(filename, freq_unit_multiplier):
         return array_to_return
 
 
-def _remove_duplicate_frequencies(unsorted_array, keep_max=True):
+def _remove_duplicate_frequencies(unsorted_array: npt.NDArray,
+                                  keep_max: bool = True) -> npt.NDArray:
     """Remove duplicates and sort by frequency
 
     Given a structured numpy array with 'frequency' and 'amplitude_db' fields,
@@ -64,8 +67,8 @@ def _remove_duplicate_frequencies(unsorted_array, keep_max=True):
     Args:
         unsorted_array: A 1D numpy structured array with fields 'frequency' and
             'amplitude_db'.
-        keep_max: A boolean determing if the max or min amplitude values will
-            be kept when duplicate frequencies are found.
+        keep_max: An optional boolean determining if the max or min amplitude
+            values will be kept when duplicate frequencies are found.
 
     Returns:
         A sorted 1D numpy structured array with fields 'frequency' and
@@ -83,8 +86,11 @@ def _remove_duplicate_frequencies(unsorted_array, keep_max=True):
     return sorted_array[unique_indices]
 
 
-def apply_antenna_factor(analyzer_readings, antenna_factors,
-                         cable_losses=False, keep_max=True):
+def apply_antenna_factor(
+        analyzer_readings: npt.NDArray,
+        antenna_factors: npt.NDArray,
+        cable_losses: Optional[npt.NDArray] = None,
+        keep_max: bool = True) -> npt.NDArray:
     """Apply the antenna factor and cable losses to the input data.
 
     Applies the frequency dependent antenna factor and, optionally, the cable
@@ -109,24 +115,28 @@ def apply_antenna_factor(analyzer_readings, antenna_factors,
             'frequency' and 'amplitude_db'.
         antenna_factors: A 1D numpy structured array containing the fields
             'frequency' and 'amplitude_db'.
-        cables_losses: A 1D numpy structured array containing the fields
-            'frequency' and 'amplitude_db'.
-        keep_max: A boolean determining whether the max or min amplitudes are
-            kept whenever duplicate frequency entries are found in the
-            antenna_factors or cable_losses arrays.
+        cables_losses: An optional 1D numpy structured array containing the
+            fields 'frequency' and 'amplitude_db'.
+        keep_max: An optional boolean determining whether the max or min
+            amplitudes are kept whenever duplicate frequency entries are found
+            in the antenna_factors or cable_losses arrays.
 
     Returns:
         A 1D numpy structured array containing the incident field.
     """
     incident_field, antenna_factors_at_analyzer_frequencies, \
         cable_losses_at_analyzer_frequencies = \
-        apply_antenna_factor_show_af_cl(analyzer_readings, antenna_factors,
+        apply_antenna_factor_show_af_cl(analyzer_readings,
+                                        antenna_factors,
                                         cable_losses, keep_max)
     return incident_field
 
 
-def apply_antenna_factor_show_af_cl(analyzer_readings, antenna_factors,
-                                    cable_losses=False, keep_max=True):
+def apply_antenna_factor_show_af_cl(
+        analyzer_readings: npt.NDArray,
+        antenna_factors: npt.NDArray,
+        cable_losses: Optional[npt.NDArray] = None,
+        keep_max: bool = True) -> tuple[npt.NDArray, npt.NDArray, npt.NDArray]:
     """Apply the antenna factor and cable losses to the input data and show the
     antenna factors and cable losses at the analyzer frequencies in addition to
     returning the incident field.
@@ -153,11 +163,11 @@ def apply_antenna_factor_show_af_cl(analyzer_readings, antenna_factors,
             'frequency' and 'amplitude_db'.
         antenna_factors: A 1D numpy structured array containing the fields
             'frequency' and 'amplitude_db'.
-        cables_losses: A 1D numpy structured array containing the fields
-            'frequency' and 'amplitude_db'.
-        keep_max: A boolean determining whether the max or min amplitudes are
-            kept whenever duplicate frequency entries are found in the
-            antenna_factors or cable_losses arrays.
+        cables_losses: An optional 1D numpy structured array containing the
+            fields 'frequency' and 'amplitude_db'.
+        keep_max: An optional boolean determining whether the max or min
+            amplitudes are kept whenever duplicate frequency entries are found
+            in the antenna_factors or cable_losses arrays.
 
     Returns:
         A tuple containing:
@@ -208,8 +218,11 @@ def apply_antenna_factor_show_af_cl(analyzer_readings, antenna_factors,
             cable_losses_at_analyzer_frequencies)
 
 
-def remove_antenna_factor(analyzer_readings, antenna_factors,
-                          cable_losses=False, keep_max=True):
+def remove_antenna_factor(
+        analyzer_readings: npt.NDArray,
+        antenna_factors: npt.NDArray,
+        cable_losses: Optional[npt.NDArray] = None,
+        keep_max: bool = True) -> npt.NDArray:
     """Remove the antenna factor and cable losses to the input data.
 
     Removes the frequency dependent antenna factor and, optionally, the cable
@@ -224,11 +237,11 @@ def remove_antenna_factor(analyzer_readings, antenna_factors,
             'frequency' and 'amplitude_db'.
         antenna_factors: A 1D numpy structured array containing the fields
             'frequency' and 'amplitude_db'.
-        cables_losses: A 1D numpy structured array containing the fields
-            'frequency' and 'amplitude_db'.
-        keep_max: A boolean determining whether the max or min amplitudes are
-            kept whenever duplicate frequency entries are found in the
-            antenna_factors or cable_losses arrays.
+        cables_losses: An optional 1D numpy structured array containing the
+            fields 'frequency' and 'amplitude_db'.
+        keep_max: An optional boolean determining whether the max or min
+            amplitudes are kept whenever duplicate frequency entries are found
+            in the antenna_factors or cable_losses arrays.
 
     Returns:
         A 1D numpy structured array containing the incident field.
