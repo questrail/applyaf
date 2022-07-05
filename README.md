@@ -5,7 +5,7 @@
 [![Coverage Status][coveralls image]][coveralls link]
 [![License Badge][license image]][LICENSE.txt]
 
-[applyaf][] is a Python 3.4+ module that applies frequency dependent
+[applyaf][] is a Python 3.6+ module that applies frequency dependent
 antenna factors and cable losses to spectrum analyzer readings in order
 to calculate the incident field. Any duplicate frequency entries in the
 antenna factors or cable losses data are removed before interpolating
@@ -31,8 +31,6 @@ The amplitude is expected to be in dB.
 ## Requirements
 
 - [numpy][]
-- `csv` module from the [Python Standard Library][]
-- `os` module from the [Python Standard Library][]
 
 
 ## Future Improvements
@@ -81,7 +79,6 @@ $ inv -l
 [applyaf]: https://github.com/questrail/applyaf
 [coveralls image]: http://img.shields.io/coveralls/questrail/applyaf/master.svg
 [coveralls link]: https://coveralls.io/r/questrail/applyaf
-[github flow]: http://scottchacon.com/2011/08/31/github-flow.html
 [invoke]: https://www.pyinvoke.org/
 [LICENSE.txt]: https://github.com/questrail/applyaf/blob/develop/LICENSE.txt
 [license image]: http://img.shields.io/pypi/l/applyaf.svg
@@ -91,7 +88,5 @@ $ inv -l
 [pyenv-virtualenv]: https://github.com/pyenv/pyenv-virtualenv
 [pypi ver image]: http://img.shields.io/pypi/v/applyaf.svg
 [pypi ver link]: https://pypi.python.org/pypi/applyaf
-[python standard library]: https://docs.python.org/2/library/
-[siganalysis]: https://github.com/questrail/siganalysis
 [travis image]: http://img.shields.io/travis/questrail/applyaf/master.svg
 [travis link]: https://travis-ci.org/questrail/applyaf
