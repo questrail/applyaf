@@ -14,6 +14,7 @@ ROOT_DIR = Path(__file__).ancestor(1)
 def lint(ctx):
     """Run flake8 to lint code"""
     run("python3 -m flake8")
+    run("python3 -m mypy src/")
 
 
 @task

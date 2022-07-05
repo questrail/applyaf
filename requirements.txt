@@ -1,6 +1,7 @@
 build==0.8.0
 colorama==0.4.4
 invoke==1.7.1
+mypy==0.961
 nose2==0.11.0
 numpy==1.23.0
 pep8==1.7.1
