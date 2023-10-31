@@ -20,12 +20,11 @@ from typing import Optional
 import numpy as np
 import numpy.typing as npt
 
-__version__ = '1.3.1'
+__version__ = "1.4.0"
 
 
 def _is_valid_file(parser, arg):
-    """Determine if the argument is an existing file
-    """
+    """Determine if the argument is an existing file"""
     if not os.path.isfile(arg):
         parser.error("The file {} does not exist!".format(arg))
     else:
@@ -34,8 +33,7 @@ def _is_valid_file(parser, arg):
 
 
 def _read_csv_file(filename: str, freq_unit_multiplier: float) -> npt.NDArray:
-    """Read csv file into a numpy array
-    """
+    """Read csv file into a numpy array"""
     # FIXME: Test a file with blank lines in the CSV file.
     with open(filename) as f:
         # Determine if the CSV file has a header row
@@ -46,16 +44,20 @@ def _read_csv_file(filename: str, freq_unit_multiplier: float) -> npt.NDArray:
         f.seek(0)
         array_to_return = np.loadtxt(
             f,
-            dtype={'names': ('frequency', 'amplitude_db'),
-                   'formats': ('f8', 'f8')},
-            delimiter=',',
-            skiprows=rows_to_skip)
-        array_to_return['frequency'] *= freq_unit_multiplier
+            dtype={
+                "names": ("frequency", "amplitude_db"),
+                "formats": ("f8", "f8"),
+            },
+            delimiter=",",
+            skiprows=rows_to_skip,
+        )
+        array_to_return["frequency"] *= freq_unit_multiplier
         return array_to_return
 
 
-def _remove_duplicate_frequencies(unsorted_array: npt.NDArray,
-                                  keep_max: bool = True) -> npt.NDArray:
+def _remove_duplicate_frequencies(
+    unsorted_array: npt.NDArray, keep_max: bool = True
+) -> npt.NDArray:
     """Remove duplicates and sort by frequency
 
     Given a structured numpy array with 'frequency' and 'amplitude_db' fields,
@@ -76,21 +78,22 @@ def _remove_duplicate_frequencies(unsorted_array: npt.NDArray,
     """
 
     # Sort the data based on the frequency and then the amplitude
-    sorted_array = np.sort(unsorted_array, order=['frequency', 'amplitude_db'])
+    sorted_array = np.sort(unsorted_array, order=["frequency", "amplitude_db"])
     if keep_max:
         # Reverse the sort order, so that we end up keeping the max value
         sorted_array = sorted_array[::-1]
 
     # Determine the unique indices and only return those
-    unique_indices = np.unique(sorted_array['frequency'], return_index=True)[1]
+    unique_indices = np.unique(sorted_array["frequency"], return_index=True)[1]
     return sorted_array[unique_indices]
 
 
 def apply_antenna_factor(
-        analyzer_readings: npt.NDArray,
-        antenna_factors: npt.NDArray,
-        cable_losses: Optional[npt.NDArray] = None,
-        keep_max: bool = True) -> npt.NDArray:
+    analyzer_readings: npt.NDArray,
+    antenna_factors: npt.NDArray,
+    cable_losses: Optional[npt.NDArray] = None,
+    keep_max: bool = True,
+) -> npt.NDArray:
     """Apply the antenna factor and cable losses to the input data.
 
     Applies the frequency dependent antenna factor and, optionally, the cable
@@ -124,19 +127,22 @@ def apply_antenna_factor(
     Returns:
         A 1D numpy structured array containing the incident field.
     """
-    incident_field, antenna_factors_at_analyzer_frequencies, \
-        cable_losses_at_analyzer_frequencies = \
-        apply_antenna_factor_show_af_cl(analyzer_readings,
-                                        antenna_factors,
-                                        cable_losses, keep_max)
+    (
+        incident_field,
+        antenna_factors_at_analyzer_frequencies,
+        cable_losses_at_analyzer_frequencies,
+    ) = apply_antenna_factor_show_af_cl(
+        analyzer_readings, antenna_factors, cable_losses, keep_max
+    )
     return incident_field
 
 
 def apply_antenna_factor_show_af_cl(
-        analyzer_readings: npt.NDArray,
-        antenna_factors: npt.NDArray,
-        cable_losses: Optional[npt.NDArray] = None,
-        keep_max: bool = True) -> tuple[npt.NDArray, npt.NDArray, npt.NDArray]:
+    analyzer_readings: npt.NDArray,
+    antenna_factors: npt.NDArray,
+    cable_losses: Optional[npt.NDArray] = None,
+    keep_max: bool = True,
+) -> tuple[npt.NDArray, npt.NDArray, npt.NDArray]:
     """Apply the antenna factor and cable losses to the input data and show the
     antenna factors and cable losses at the analyzer frequencies in addition to
     returning the incident field.
@@ -180,49 +186,59 @@ def apply_antenna_factor_show_af_cl(
 
     # Remove duplicates and keep the max or min
     analyzer_readings_no_duplicates = _remove_duplicate_frequencies(
-        analyzer_readings, keep_max)
+        analyzer_readings, keep_max
+    )
     antenna_factors_no_duplicates = _remove_duplicate_frequencies(
-        antenna_factors, keep_max)
+        antenna_factors, keep_max
+    )
 
     # Interpolate the antenna factors so that they align
     # with the frequencies found in the spectrum analyzer readings
     antenna_factors_at_analyzer_frequencies = np.interp(
-        analyzer_readings_no_duplicates['frequency'],
-        antenna_factors_no_duplicates['frequency'],
-        antenna_factors_no_duplicates['amplitude_db'])
+        analyzer_readings_no_duplicates["frequency"],
+        antenna_factors_no_duplicates["frequency"],
+        antenna_factors_no_duplicates["amplitude_db"],
+    )
 
     if isinstance(cable_losses, np.ndarray):
         # If a numpy.array was provided for the cables_losses then
         # remove the duplicates and interpolate so that its frequencies
         # align with the spectrum analyzer readings
         cable_losses_no_duplicates = _remove_duplicate_frequencies(
-            cable_losses, keep_max)
+            cable_losses, keep_max
+        )
         cable_losses_at_analyzer_frequencies = np.interp(
-            analyzer_readings_no_duplicates['frequency'],
-            cable_losses_no_duplicates['frequency'],
-            cable_losses_no_duplicates['amplitude_db'])
+            analyzer_readings_no_duplicates["frequency"],
+            cable_losses_no_duplicates["frequency"],
+            cable_losses_no_duplicates["amplitude_db"],
+        )
         incident_field = analyzer_readings_no_duplicates
-        incident_field['amplitude_db'] += \
-            antenna_factors_at_analyzer_frequencies
-        incident_field['amplitude_db'] += \
-            cable_losses_at_analyzer_frequencies
+        incident_field[
+            "amplitude_db"
+        ] += antenna_factors_at_analyzer_frequencies
+        incident_field["amplitude_db"] += cable_losses_at_analyzer_frequencies
     else:
         # There were no cable losses provided, so just apply the
         # antenna factors.
         incident_field = analyzer_readings_no_duplicates
-        incident_field['amplitude_db'] += \
-            antenna_factors_at_analyzer_frequencies
+        incident_field[
+            "amplitude_db"
+        ] += antenna_factors_at_analyzer_frequencies
+        cable_losses_at_analyzer_frequencies = np.empty([1, 1])
 
-    return (incident_field,
-            antenna_factors_at_analyzer_frequencies,
-            cable_losses_at_analyzer_frequencies)
+    return (
+        incident_field,
+        antenna_factors_at_analyzer_frequencies,
+        cable_losses_at_analyzer_frequencies,
+    )
 
 
 def remove_antenna_factor(
-        analyzer_readings: npt.NDArray,
-        antenna_factors: npt.NDArray,
-        cable_losses: Optional[npt.NDArray] = None,
-        keep_max: bool = True) -> npt.NDArray:
+    analyzer_readings: npt.NDArray,
+    antenna_factors: npt.NDArray,
+    cable_losses: Optional[npt.NDArray] = None,
+    keep_max: bool = True,
+) -> npt.NDArray:
     """Remove the antenna factor and cable losses to the input data.
 
     Removes the frequency dependent antenna factor and, optionally, the cable
@@ -249,37 +265,43 @@ def remove_antenna_factor(
 
     # Remove duplicates and keep the max or min
     analyzer_readings_no_duplicates = _remove_duplicate_frequencies(
-        analyzer_readings, keep_max)
+        analyzer_readings, keep_max
+    )
     antenna_factors_no_duplicates = _remove_duplicate_frequencies(
-        antenna_factors, keep_max)
+        antenna_factors, keep_max
+    )
 
     # Interpolate the antenna factors so that they align
     # with the frequencies found in the spectrum analyzer readings
     antenna_factors_at_analyzer_frequencies = np.interp(
-        analyzer_readings_no_duplicates['frequency'],
-        antenna_factors_no_duplicates['frequency'],
-        antenna_factors_no_duplicates['amplitude_db'])
+        analyzer_readings_no_duplicates["frequency"],
+        antenna_factors_no_duplicates["frequency"],
+        antenna_factors_no_duplicates["amplitude_db"],
+    )
 
     if isinstance(cable_losses, np.ndarray):
         # If a numpy.array was provided for the cables_losses then
         # remove the duplicates and interpolate so that its frequencies
         # align with the spectrum analyzer readings
         cable_losses_no_duplicates = _remove_duplicate_frequencies(
-            cable_losses, keep_max)
+            cable_losses, keep_max
+        )
         cable_losses_at_analyzer_frequencies = np.interp(
-            analyzer_readings_no_duplicates['frequency'],
-            cable_losses_no_duplicates['frequency'],
-            cable_losses_no_duplicates['amplitude_db'])
+            analyzer_readings_no_duplicates["frequency"],
+            cable_losses_no_duplicates["frequency"],
+            cable_losses_no_duplicates["amplitude_db"],
+        )
         incident_field = analyzer_readings_no_duplicates
-        incident_field['amplitude_db'] -= \
-            antenna_factors_at_analyzer_frequencies
-        incident_field['amplitude_db'] -= \
-            cable_losses_at_analyzer_frequencies
+        incident_field[
+            "amplitude_db"
+        ] -= antenna_factors_at_analyzer_frequencies
+        incident_field["amplitude_db"] -= cable_losses_at_analyzer_frequencies
     else:
         # There were no cable losses provided, so just apply the
         # antenna factors.
         incident_field = analyzer_readings_no_duplicates
-        incident_field['amplitude_db'] -= \
-            antenna_factors_at_analyzer_frequencies
+        incident_field[
+            "amplitude_db"
+        ] -= antenna_factors_at_analyzer_frequencies
 
     return incident_field
