@@ -7,6 +7,6 @@ numpy==1.26.4
 pep8==1.7.1
 pep8-naming==0.13.3
 pip-chill==1.0.3
-tqdm==4.66.2
+tqdm==4.66.3
 twine==5.0.0
 unipath==1.1
