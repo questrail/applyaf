@@ -20,7 +20,7 @@ from typing import Optional
 import numpy as np
 import numpy.typing as npt
 
-__version__ = "1.5.1"
+__version__ = "1.5.2"
 
 
 def _is_valid_file(parser, arg):
