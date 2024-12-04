@@ -60,8 +60,8 @@ and [pyenv-virtualenv][], install the requirements in the virtualenv named
 `applyaf`, and list the available [Invoke][] tasks.
 
 ```bash
-$ pyenv install 3.12
-$ pyenv virtualenv 3.12.2 applyaf
+$ pyenv install 3.13
+$ pyenv virtualenv 3.13 applyaf
 $ pyenv activate applyaf
 $ pip install -r requirements.txt
 $ inv -l

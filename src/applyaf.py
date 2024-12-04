@@ -20,7 +20,7 @@ from typing import Optional
 import numpy as np
 import numpy.typing as npt
 
-__version__ = "1.4.0"
+__version__ = "1.5.0"
 
 
 def _is_valid_file(parser, arg):
@@ -213,17 +213,13 @@ def apply_antenna_factor_show_af_cl(
             cable_losses_no_duplicates["amplitude_db"],
         )
         incident_field = analyzer_readings_no_duplicates
-        incident_field[
-            "amplitude_db"
-        ] += antenna_factors_at_analyzer_frequencies
+        incident_field["amplitude_db"] += antenna_factors_at_analyzer_frequencies
         incident_field["amplitude_db"] += cable_losses_at_analyzer_frequencies
     else:
         # There were no cable losses provided, so just apply the
         # antenna factors.
         incident_field = analyzer_readings_no_duplicates
-        incident_field[
-            "amplitude_db"
-        ] += antenna_factors_at_analyzer_frequencies
+        incident_field["amplitude_db"] += antenna_factors_at_analyzer_frequencies
         cable_losses_at_analyzer_frequencies = np.empty([1, 1])
 
     return (
@@ -292,16 +288,12 @@ def remove_antenna_factor(
             cable_losses_no_duplicates["amplitude_db"],
         )
         incident_field = analyzer_readings_no_duplicates
-        incident_field[
-            "amplitude_db"
-        ] -= antenna_factors_at_analyzer_frequencies
+        incident_field["amplitude_db"] -= antenna_factors_at_analyzer_frequencies
         incident_field["amplitude_db"] -= cable_losses_at_analyzer_frequencies
     else:
         # There were no cable losses provided, so just apply the
         # antenna factors.
         incident_field = analyzer_readings_no_duplicates
-        incident_field[
-            "amplitude_db"
-        ] -= antenna_factors_at_analyzer_frequencies
+        incident_field["amplitude_db"] -= antenna_factors_at_analyzer_frequencies
 
     return incident_field
