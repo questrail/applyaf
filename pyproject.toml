@@ -24,14 +24,14 @@ venv = "applyaf"
 reportMissingImports = false
 reportMissingTypeStubs = false
 
-pythonVersion = "3.6"
+pythonVersion = "3.8"
 pythonPlatform = "Linux"
 
 executionEnvironments = [
-  { root = "src/web", pythonVersion = "3.5", pythonPlatform = "Windows", extraPaths = [
+  { root = "src/web", pythonVersion = "3.8", pythonPlatform = "Windows", extraPaths = [
     "src/service_libs",
   ] },
-  { root = "src/sdk", pythonVersion = "3.0", extraPaths = [
+  { root = "src/sdk", pythonVersion = "3.8", extraPaths = [
     "src/backend",
   ] },
   { root = "src/tests", extraPaths = [

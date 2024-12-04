@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2022 The taffmat developers. All rights reserved.
-# Project site: https://github.com/questrail/taffmat
+# Copyright (c) 2022–2024 The applyaf developers. All rights reserved.
+# Project site: https://github.com/questrail/applyaf
 # Use of this source code is governed by a MIT-style license that
 # can be found in the LICENSE.txt file for the project.
 from invoke import run, task
@@ -31,9 +31,8 @@ def test(ctx):
 
 
 @task()
-def release(ctx, deploy=False, test=False, version=''):
-    """Tag release, run Travis-CI, and deploy to PyPI
-    """
+def release(ctx, deploy=False, test=False, version=""):
+    """Tag release, run Travis-CI, and deploy to PyPI"""
     if test:
         run("python setup.py check")
         run("python setup.py register sdist upload --dry-run")

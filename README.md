@@ -5,12 +5,11 @@
 [![Coverage Status][coveralls image]][coveralls link]
 [![License Badge][license image]][LICENSE.txt]
 
-[applyaf][] is a Python 3.6+ module that applies frequency dependent
+[applyaf][] is a Python 3.8+ module that applies frequency dependent
 antenna factors and cable losses to spectrum analyzer readings in order
 to calculate the incident field. Any duplicate frequency entries in the
 antenna factors or cable losses data are removed before interpolating
 the frequencies to match those of the spectrum analyzer readings.
-
 
 ## Inputs
 
@@ -27,23 +26,20 @@ Each CSV file should contain data in two columns:
 
 The amplitude is expected to be in dB.
 
-
 ## Requirements
 
 - [numpy][]
-
 
 ## Future Improvements
 
 Some thoughts for future improvements include:
 
 1. Allowing CSV data files that contain non-dB amplitudes and then
-convert as needed. Should this be a per-file setting?
+   convert as needed. Should this be a per-file setting?
 2. Generalize the code to handle a variable number (>3) of data to be
-interpolated and applied to the given data set.
+   interpolated and applied to the given data set.
 3. If the code is generalized, should this be wrapped into the
-[siganalysis][] project or left on its own?
-
+   [siganalysis][] project or left on its own?
 
 ## Contributing
 
@@ -55,17 +51,17 @@ Contributions are welcome! To contribute please:
 4. Pass lint and tests
 5. Submit a [pull request][]
 
-
 ## Development Setup
 
 ### Development Setup Using pyenv
 
-Use the following commands to create a Python 3.9.9 virtualenv using [pyenv][]
+Use the following commands to create a Python 3.12 virtualenv using [pyenv][]
 and [pyenv-virtualenv][], install the requirements in the virtualenv named
 `applyaf`, and list the available [Invoke][] tasks.
 
 ```bash
-$ pyenv virtualenv 3.9.9 applyaf
+$ pyenv install 3.12
+$ pyenv virtualenv 3.12.2 applyaf
 $ pyenv activate applyaf
 $ pip install -r requirements.txt
 $ inv -l
@@ -88,5 +84,6 @@ $ inv -l
 [pyenv-virtualenv]: https://github.com/pyenv/pyenv-virtualenv
 [pypi ver image]: http://img.shields.io/pypi/v/applyaf.svg
 [pypi ver link]: https://pypi.python.org/pypi/applyaf
+[siganalysis]: https://github.com/questrail/siganalysis
 [travis image]: http://img.shields.io/travis/questrail/applyaf/master.svg
 [travis link]: https://travis-ci.org/questrail/applyaf
