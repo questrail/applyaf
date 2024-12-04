@@ -6,14 +6,13 @@
 from invoke import run, task
 from unipath import Path
 
-TESTPYPI = "https://testpypi.python.org/pypi"
 ROOT_DIR = Path(__file__).ancestor(1)
 
 
 @task
 def lint(ctx):
-    """Run flake8 to lint code"""
-    run("python3 -m flake8")
+    """Run ruff and mypy to lint code"""
+    run("ruff check src/")
     run("python3 -m mypy src/")
 
 
@@ -31,14 +30,9 @@ def test(ctx):
 
 
 @task()
-def release(ctx, deploy=False, test=False, version=""):
+def release(ctx, deploy=False, version=""):
     """Tag release, run Travis-CI, and deploy to PyPI"""
-    if test:
-        run("python setup.py check")
-        run("python setup.py register sdist upload --dry-run")
-
     if deploy:
-        run("python setup.py check")
         if version:
             run("git checkout master")
             run("git tag -a v{ver} -m 'v{ver}'".format(ver=version))
