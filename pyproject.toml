@@ -1,14 +1,16 @@
+# pyproject.toml
+
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
 name = "applyaf"
-version = "1.4.0"
+version = "1.5.3"
 authors = [{ name = "Matthew Rankin", email = "matthew@questrail.com" }]
 description = "Apply antenna factor and cable loss to spectrum analyzer measurements"
 readme = "README.md"
-requires-python = ">=3.8"
+requires-python = ">=3.9"
 dependencies = ["numpy>=1.26.0"]
 classifiers = [
   'Programming Language :: Python',
@@ -31,6 +33,15 @@ Issues = "https://github.com/questrail/applyaf/issues"
 
 [tool.black]
 line-length = 80
+
+[tool.hatch.build.tagets.sdist]
+exclude = ["/.github", "/docs", "/cover"]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/applyaf"]
+
+[tool.nose2.coverage]
+always-on = true
 
 [tool.pylint]
 max-line-length = 80

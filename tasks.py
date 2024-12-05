@@ -3,6 +3,8 @@
 # Project site: https://github.com/questrail/applyaf
 # Use of this source code is governed by a MIT-style license that
 # can be found in the LICENSE.txt file for the project.
+"""Invoke based tasks for applyaf"""
+
 from invoke import run, task
 from unipath import Path
 
@@ -11,6 +13,7 @@ ROOT_DIR = Path(__file__).ancestor(1)
 
 @task
 def lint(ctx):
+    # pylint: disable=W0613
     """Run ruff and mypy to lint code"""
     run("ruff check src/")
     run("python3 -m mypy src/")
@@ -31,15 +34,14 @@ def test(ctx):
 
 @task()
 def release(ctx, deploy=False, version=""):
-    """Tag release, run Travis-CI, and deploy to PyPI"""
-    if deploy:
-        if version:
-            run("git checkout master")
-            run("git tag -a v{ver} -m 'v{ver}'".format(ver=version))
-            run("git push")
-            run("git push origin --tags")
-            run("python3 -m build")
-            run("python3 -m twine upload dist/*")
+    """Tag release and deploy to PyPI"""
+    if deploy and version:
+        run("git checkout master")
+        run("git tag -a v{ver} -m 'v{ver}'".format(ver=version))
+        run("git push")
+        run("git push origin --tags")
+        run("hatch build")
+        run("hatch publish")
     else:
         print("* Have you updated the version?")
         print("* Have you updated CHANGELOG.md?")

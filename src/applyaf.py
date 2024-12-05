@@ -20,8 +20,6 @@ from typing import Optional
 import numpy as np
 import numpy.typing as npt
 
-__version__ = "1.5.2"
-
 
 def _is_valid_file(parser, arg):
     """Determine if the argument is an existing file"""
