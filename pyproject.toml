@@ -6,7 +6,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "applyaf"
-version = "1.6.4"
+version = "1.6.5"
 authors = [{ name = "Matthew Rankin", email = "matthew@questrail.com" }]
 description = "Apply antenna factor and cable loss to spectrum analyzer measurements"
 readme = "README.md"
@@ -28,10 +28,11 @@ classifiers = [
 ]
 
 [tool.hatch.build.targets.sdist]
+include = ["/src/applyaf.py"]
 exclude = ["/.github", "/docs", "/cover"]
 
 [tool.hatch.build.targets.wheel]
-packages = ["/src"]
+include = ["/src/applyaf.py"]
 
 [project.urls]
 Homepage = "https://github.com/questrail/applyaf"
