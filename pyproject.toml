@@ -6,7 +6,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "applyaf"
-version = "1.5.3"
+version = "1.6.0"
 authors = [{ name = "Matthew Rankin", email = "matthew@questrail.com" }]
 description = "Apply antenna factor and cable loss to spectrum analyzer measurements"
 readme = "README.md"

@@ -29,7 +29,13 @@ def freeze(ctx):
 @task(lint)
 def test(ctx):
     """Lint and run unit tests"""
-    run("nose2")
+    run("nose2 -C")
+
+
+@task
+def outdated(ctx):
+    """List outdated packages"""
+    run("pip list --outdated")
 
 
 @task()
