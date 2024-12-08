@@ -15,8 +15,8 @@ ROOT_DIR = Path(__file__).ancestor(1)
 def lint(ctx):
     # pylint: disable=W0613
     """Run ruff and mypy to lint code"""
-    run("ruff check src/")
-    run("python3 -m mypy src/")
+    run("ruff check applyaf.py")
+    run("python3 -m mypy applyaf.py")
 
 
 @task
