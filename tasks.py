@@ -5,49 +5,49 @@
 # can be found in the LICENSE.txt file for the project.
 """Invoke based tasks for applyaf"""
 
-from invoke import run, task
+from invoke import task
 from unipath import Path
 
 ROOT_DIR = Path(__file__).ancestor(1)
 
 
 @task
-def lint(ctx):
+def lint(c):
     # pylint: disable=W0613
     """Run ruff and mypy to lint code"""
-    run("ruff check applyaf.py")
-    run("python3 -m mypy applyaf.py")
+    c.run("ruff check applyaf.py")
+    c.run("python3 -m mypy applyaf.py")
 
 
 @task
-def freeze(ctx):
+def freeze(c):
     # pylint: disable=W0613
     """Freeze the pip requirements using pip-chill"""
-    run(f"pip-chill > {Path(ROOT_DIR, 'requirements.txt')}")
+    c.run(f"pip-chill > {Path(ROOT_DIR, 'requirements.txt')}")
 
 
 @task(lint)
-def test(ctx):
+def test(c):
     """Lint and run unit tests"""
-    run("nose2 -C")
+    c.run("nose2 -C")
 
 
 @task
-def outdated(ctx):
+def outdated(c):
     """List outdated packages"""
-    run("pip list --outdated")
+    c.run("pip list --outdated")
 
 
 @task()
-def release(ctx, deploy=False, version=""):
+def release(c, deploy=False, version=""):
     """Tag release and deploy to PyPI"""
     if deploy and version:
-        run("git checkout master")
-        run("git tag -a v{ver} -m 'v{ver}'".format(ver=version))
-        run("git push")
-        run("git push origin --tags")
-        run("hatch build")
-        run("hatch publish")
+        c.run("git checkout master")
+        c.run("git tag -a v{ver} -m 'v{ver}'".format(ver=version))
+        c.run("git push")
+        c.run("git push origin --tags")
+        c.run("hatch build")
+        c.run("hatch publish")
     else:
         print("* Have you updated the version?")
         print("* Have you updated CHANGELOG.md?")
