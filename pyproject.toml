@@ -2,7 +2,7 @@
 
 [project]
 name = "applyaf"
-version = "1.6.6"
+version = "2.0.1"
 description = "Apply antenna factors and cable loss to spectrum analyzer measurements"
 readme = "README.md"
 authors = [{ name = "Matthew Rankin", email = "matthew@questrail.com" }]
@@ -34,6 +34,4 @@ venv = ".venv"
 include = ["src"]
 
 [dependency-groups]
-dev = [
-    "pytest>=8.3.4",
-]
+dev = ["pytest>=8.3.4"]
