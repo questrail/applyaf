@@ -5,7 +5,7 @@
 [![Coverage Status][coveralls image]][coveralls link]
 [![License Badge][license image]][LICENSE.txt]
 
-[applyaf][] is a Python 3.8+ module that applies frequency dependent
+[applyaf][] is a Python 3.9+ module that applies frequency dependent
 antenna factors and cable losses to spectrum analyzer readings in order
 to calculate the incident field. Any duplicate frequency entries in the
 antenna factors or cable losses data are removed before interpolating
@@ -53,10 +53,12 @@ Contributions are welcome! To contribute please:
 
 ## Development Setup
 
+### Development Setup Using uv
+
 ### Development Setup Using pyenv
 
-Use the following commands to create a Python 3.12 virtualenv using [pyenv][]
-and [pyenv-virtualenv][], install the requirements in the virtualenv named
+Use the following commands to create a virtualenv using [pyenv][] and
+[pyenv-virtualenv][], install the requirements in the virtualenv named
 `applyaf`, and list the available [Invoke][] tasks.
 
 ```bash
