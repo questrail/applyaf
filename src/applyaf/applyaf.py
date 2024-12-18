@@ -13,7 +13,6 @@ data.
 
 # Standard module imports
 import csv
-import os.path
 from typing import Optional
 
 # Data analysis related imports
@@ -21,16 +20,7 @@ import numpy as np
 import numpy.typing as npt
 
 
-def _is_valid_file(parser, arg):
-    """Determine if the argument is an existing file"""
-    if not os.path.isfile(arg):
-        parser.error("The file {} does not exist!".format(arg))
-    else:
-        # File exists so return the filename
-        return arg
-
-
-def _read_csv_file(filename: str, freq_unit_multiplier: float) -> npt.NDArray:
+def read_csv_file(filename: str, freq_unit_multiplier: float) -> npt.NDArray:
     """Read csv file into a numpy array"""
     # FIXME: Test a file with blank lines in the CSV file.
     with open(filename) as f:
@@ -125,11 +115,7 @@ def apply_antenna_factor(
     Returns:
         A 1D numpy structured array containing the incident field.
     """
-    (
-        incident_field,
-        antenna_factors_at_analyzer_frequencies,
-        cable_losses_at_analyzer_frequencies,
-    ) = apply_antenna_factor_show_af_cl(
+    (incident_field, _, _,) = apply_antenna_factor_show_af_cl(
         analyzer_readings, antenna_factors, cable_losses, keep_max
     )
     return incident_field

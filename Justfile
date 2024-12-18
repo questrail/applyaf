@@ -16,14 +16,24 @@ lint:
 # Test code using nose2
 [group('test')]
 test: 
-  uv run nose2 -C
+  uv run pytest
+
+# Add/update dependency
+[group('dependencies')]
+add dep:
+  uv add {{dep}}
+
+# Add/update dependency to the development group
+[group('dependencies')]
+dev dep:
+  uv add --dev {{dep}}
 
 # List the outdated dependencies
 [group('dependencies')]
-outdated:
-  pip list --outdated
+out:
+  uv pip list --outdated
 
-# Freeze dependencies
+# Lock/freeze dependencies
 [group('dependencies')]
-freeze:
+lock:
   uv lock

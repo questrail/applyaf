@@ -28,43 +28,12 @@ Issues = "https://github.com/questrail/applyaf/issues"
 requires = ["hatchling"]
 build-backend = "hatchling.build"
 
-[tool.nose2.coverage]
-always-on = true
-
 [tool.pyright]
+venvPath = "."
+venv = ".venv"
 include = ["src"]
-exclude = [
-  "**/node_modules",
-  "**/__pycache__",
-  "src/experimental",
-  "src/typestubs",
-]
-ignore = ["src/oldstuff"]
-defineConstant = { DEBUG = true }
-stubPath = "src/stubs"
-venv = "applyaf"
-
-reportMissingImports = false
-reportMissingTypeStubs = false
-
-pythonVersion = "3.8"
-pythonPlatform = "Linux"
-
-executionEnvironments = [
-  { root = "src/web", pythonVersion = "3.8", pythonPlatform = "Windows", extraPaths = [
-    "src/service_libs",
-  ] },
-  { root = "src/sdk", pythonVersion = "3.8", extraPaths = [
-    "src/backend",
-  ] },
-  { root = "src/tests", extraPaths = [
-    "src/tests/e2e",
-    "src/sdk",
-  ] },
-  { root = "src" },
-]
 
 [dependency-groups]
 dev = [
-    "nose2>=0.15.1",
+    "pytest>=8.3.4",
 ]
