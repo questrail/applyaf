@@ -2,7 +2,7 @@
 
 [project]
 name = "applyaf"
-version = "2.0.1"
+version = "2.1.0"
 description = "Apply antenna factors and cable loss to spectrum analyzer measurements"
 readme = "README.md"
 authors = [{ name = "Matthew Rankin", email = "matthew@questrail.com" }]
