@@ -115,7 +115,11 @@ def apply_antenna_factor(
     Returns:
         A 1D numpy structured array containing the incident field.
     """
-    (incident_field, _, _,) = apply_antenna_factor_show_af_cl(
+    (
+        incident_field,
+        _,
+        _,
+    ) = apply_antenna_factor_show_af_cl(
         analyzer_readings, antenna_factors, cable_losses, keep_max
     )
     return incident_field
