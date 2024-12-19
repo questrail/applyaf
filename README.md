@@ -64,9 +64,9 @@ $ just
 #### Deploying with uv
 
 ```bash
+$ just test
 $ git tag -a vX.Y.Z -m "vX.Y.Z"
-$ uv build
-$ uv publish
+$ just deploy
 ```
 
 #### Development Setup on macOS

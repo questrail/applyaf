@@ -38,3 +38,9 @@ out:
 [group('dependencies')]
 lock:
   uv lock
+
+# Format, test, build, and publish to PyPI
+[group('deploy')]
+deploy: fix test
+  uv build
+  uv publish
