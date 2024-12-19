@@ -1,15 +1,14 @@
 # applyaf
 
 [![PyPi Version][pypi ver image]][pypi ver link]
-[![Build Status][travis image]][travis link]
 [![Coverage Status][coveralls image]][coveralls link]
 [![License Badge][license image]][LICENSE.txt]
 
-[applyaf][] is a Python 3.9+ module that applies frequency dependent
-antenna factors and cable losses to spectrum analyzer readings in order
-to calculate the incident field. Any duplicate frequency entries in the
-antenna factors or cable losses data are removed before interpolating
-the frequencies to match those of the spectrum analyzer readings.
+[applyaf][] is a Python 3.12+ module that applies frequency dependent antenna
+factors and cable losses to spectrum analyzer readings in order to calculate the
+incident field. Any duplicate frequency entries in the antenna factors or cable
+losses data are removed before interpolating the frequencies to match those of
+the spectrum analyzer readings.
 
 ## Inputs
 
@@ -26,9 +25,9 @@ Each CSV file should contain data in two columns:
 
 The amplitude is expected to be in dB.
 
-## Requirements
+## Dependencies
 
-- [numpy][]
+See the `pyproject.toml` and `uv.lock` files for the dependency requirements.
 
 ## Future Improvements
 
@@ -55,18 +54,25 @@ Contributions are welcome! To contribute please:
 
 ### Development Setup Using uv
 
-### Development Setup Using pyenv
-
-Use the following commands to create a virtualenv using [pyenv][] and
-[pyenv-virtualenv][], install the requirements in the virtualenv named
-`applyaf`, and list the available [Invoke][] tasks.
+With [uv][], [ruff][] and [Just][] installed, development has been simplified to
+simply running [Just][] to see the available commands.
 
 ```bash
-$ pyenv install 3.13
-$ pyenv virtualenv 3.13 applyaf
-$ pyenv activate applyaf
-$ pip install -r requirements.txt
-$ inv -l
+$ just
+```
+
+#### Deploying with uv
+
+```bash
+$ git tag -a vX.Y.Z -m "vX.Y.Z"
+$ uv build
+$ uv publish
+```
+
+#### Development Setup on macOS
+
+```bash
+$ brew install uv ruff just
 ```
 
 ## License
@@ -78,14 +84,13 @@ $ inv -l
 [coveralls image]: http://img.shields.io/coveralls/questrail/applyaf/master.svg
 [coveralls link]: https://coveralls.io/r/questrail/applyaf
 [invoke]: https://www.pyinvoke.org/
+[just]: https://just.systems/
 [LICENSE.txt]: https://github.com/questrail/applyaf/blob/develop/LICENSE.txt
 [license image]: http://img.shields.io/pypi/l/applyaf.svg
 [numpy]: http://www.numpy.org
 [pull request]: https://help.github.com/articles/using-pull-requests
-[pyenv]: https://github.com/pyenv/pyenv
-[pyenv-virtualenv]: https://github.com/pyenv/pyenv-virtualenv
 [pypi ver image]: http://img.shields.io/pypi/v/applyaf.svg
 [pypi ver link]: https://pypi.python.org/pypi/applyaf
+[ruff]: https://docs.astral.sh/ruff/
 [siganalysis]: https://github.com/questrail/siganalysis
-[travis image]: http://img.shields.io/travis/questrail/applyaf/master.svg
-[travis link]: https://travis-ci.org/questrail/applyaf
+[uv]: https://docs.astral.sh/uv/
