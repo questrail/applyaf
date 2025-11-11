@@ -19,15 +19,22 @@ fix:
 test: 
   uv run pytest
 
-# Add/update dependency
+# Add dependency
 [group('dependencies')]
 add dep:
   uv add {{dep}}
 
-# Add/update dependency to the development group
+# Add dependency to the development group
 [group('dependencies')]
 dev dep:
   uv add --dev {{dep}}
+
+# Update dependency
+[group('dependencies')]
+up dep:
+  uv remove {{dep}}
+  uv add {{dep}}
+  uv lock -P {{dep}}
 
 # List the outdated dependencies
 [group('dependencies')]
