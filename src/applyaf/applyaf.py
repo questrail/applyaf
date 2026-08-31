@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # Copyright (c) 2013-2024 The applyaf developers. All rights reserved.
 # Project site: https://github.com/questrail/applyaf
 # Use of this source code is governed by a MIT-style license that
@@ -13,7 +12,6 @@ data.
 
 # Standard module imports
 import csv
-from typing import Optional
 
 # Data analysis related imports
 import numpy as np
@@ -129,7 +127,7 @@ def _remove_duplicate_frequencies(
 def apply_antenna_factor(
     analyzer_readings: npt.NDArray,
     antenna_factors: npt.NDArray,
-    cable_losses: Optional[npt.NDArray] = None,
+    cable_losses: npt.NDArray | None = None,
     keep_max: bool = True,
 ) -> npt.NDArray:
     """Apply the antenna factor and cable losses to the input data.
@@ -178,7 +176,7 @@ def apply_antenna_factor(
 def apply_antenna_factor_show_af_cl(
     analyzer_readings: npt.NDArray,
     antenna_factors: npt.NDArray,
-    cable_losses: Optional[npt.NDArray] = None,
+    cable_losses: npt.NDArray | None = None,
     keep_max: bool = True,
 ) -> tuple[npt.NDArray, npt.NDArray, npt.NDArray]:
     """Apply the antenna factor and cable losses to the input data and show the
@@ -271,7 +269,7 @@ def apply_antenna_factor_show_af_cl(
 def remove_antenna_factor(
     analyzer_readings: npt.NDArray,
     antenna_factors: npt.NDArray,
-    cable_losses: Optional[npt.NDArray] = None,
+    cable_losses: npt.NDArray | None = None,
     keep_max: bool = True,
 ) -> npt.NDArray:
     """Remove the antenna factor and cable losses to the input data.

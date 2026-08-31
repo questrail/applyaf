@@ -8,15 +8,22 @@
 loc:
   scc --remap-unknown "-*- Justfile -*-":"justfile"
 
-# Lint and format code using ruff
+# Lint and format code using ruff, applying any fixes
 [group('test')]
-fix: 
-  ruff check
-  ruff format
+fix:
+  uv run ruff check --fix
+  uv run ruff format
+
+# Check lint, formatting, and types without modifying any files
+[group('test')]
+lint:
+  uv run ruff check
+  uv run ruff format --check
+  uv run pyright
 
 # Test code using pytest
 [group('test')]
-test: 
+test:
   uv run pytest
 
 # Add dependency
@@ -46,8 +53,8 @@ out:
 lock:
   uv lock
 
-# Format, test, build, and publish to PyPI
+# Check, test, build, and publish to PyPI
 [group('deploy')]
-deploy: fix test
+deploy: lint test
   uv build
   uv publish
