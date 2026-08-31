@@ -77,7 +77,8 @@ committed first.
 
 ```bash
 $ uv version --bump minor        # or major / patch
-$ # close out the Unreleased section of CHANGELOG.md
+$ # in CHANGELOG.md, insert a "## vX.Y.Z - YYYY-MM-DD" heading directly
+$ # below "## Unreleased" so the accumulated entries sit under the new version
 $ uv lock
 $ git commit -am "Release vX.Y.Z"
 $ git tag -a vX.Y.Z -m "vX.Y.Z"
