@@ -71,14 +71,36 @@ $ just
 
 #### Releasing to PyPI
 
-`just release` cuts the release. It lints, type checks, tests, bumps the
-version, closes out the CHANGELOG, updates the lock file, commits, and tags.
-Pushing the tag is what publishes.
+`just release` cuts the release. It lints, type checks, and tests, then shows
+the entries waiting under Unreleased and the version each kind of bump would
+produce, and asks which to cut. Once answered it bumps the version, closes out
+the CHANGELOG, updates the lock file, commits, and tags. Pushing the tag is
+what publishes.
 
 ```bash
-$ just release           # patch; or: just release minor / just release major
-$ git push --follow-tags
+$ just release
+
+Releasing from 3.0.1, with these entries under Unreleased:
+
+    ### Fixed
+
+    - A pretend fix.
+
+    1) patch   3.0.1 -> 3.0.2
+    2) minor   3.0.1 -> 3.1.0
+    3) major   3.0.1 -> 4.0.0
+    q) cancel
+
+Which release? [1] 2
+
+Tagged v3.1.0. Publish it with:
+
+    git push --follow-tags
 ```
+
+The entries decide the bump, so the prompt puts them next to the versions they
+would produce rather than leaving the choice to memory. Answering `q`, or
+anything unrecognized, changes nothing.
 
 The tag push runs the [release workflow][], which rechecks the tag against the
 version in `pyproject.toml`, repeats the checks, builds, and uploads. There is

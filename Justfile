@@ -41,7 +41,7 @@ add dep:
 dev dep:
   uv add --dev {{dep}}
 
-# Update dependency to the newest version allowed by pyproject.toml
+# Update dep to the newest ver allowed by pyproject.toml
 [group('dependencies')]
 up dep:
   uv lock --upgrade-package {{dep}}
@@ -69,9 +69,9 @@ build: lint test
   @test -z "$(git status --porcelain)" || { echo "Working tree is dirty"; exit 1; }
   uv build --clear
 
-# Bump the version, close out the CHANGELOG, commit, and tag a release
+# Cut a release: pick the version, close out the CHANGELOG, commit, and tag
 [group('deploy')]
-release bump="patch": lint test
+release: lint test
   #!/usr/bin/env bash
   set -euo pipefail
   if [ -n "$(git status --porcelain)" ]; then
@@ -84,25 +84,45 @@ release bump="patch": lint test
   if [ "$behind" != 0 ]; then
     echo "master is ${behind} commit(s) behind its upstream; pull first" >&2; exit 1
   fi
-  if ! python3 - <<'PY'
-  import pathlib, re, sys
-  body = re.search(
+  unreleased="$(python3 - <<'PY'
+  import pathlib, re
+  m = re.search(
       r"^## Unreleased\s*\n(.*?)(?=^## v)",
       pathlib.Path("CHANGELOG.md").read_text(),
       re.S | re.M,
   )
-  sys.exit(0 if body and body.group(1).strip() else 1)
+  print((m.group(1).strip() if m else ""))
   PY
-  then
+  )"
+  if [ -z "$unreleased" ]; then
     echo "CHANGELOG.md has no entries under Unreleased" >&2; exit 1
   fi
-  version="$(uv version --short --bump {{bump}} --dry-run)"
+  current="$(uv version --short)"
+  echo
+  echo "Releasing from ${current}, with these entries under Unreleased:"
+  echo
+  sed 's/^./    &/' <<<"$unreleased"
+  echo
+  echo "    1) patch   ${current} -> $(uv version --short --bump patch --dry-run)"
+  echo "    2) minor   ${current} -> $(uv version --short --bump minor --dry-run)"
+  echo "    3) major   ${current} -> $(uv version --short --bump major --dry-run)"
+  echo "    q) cancel"
+  echo
+  read -r -p "Which release? [1] " choice
+  case "${choice:-1}" in
+    1|p|patch) bump=patch ;;
+    2|m|minor) bump=minor ;;
+    3|M|major) bump=major ;;
+    q|Q) echo "Cancelled."; exit 0 ;;
+    *) echo "Unrecognized choice: ${choice}" >&2; exit 1 ;;
+  esac
+  version="$(uv version --short --bump "$bump" --dry-run)"
   tag="v${version}"
   if git rev-parse -q --verify "refs/tags/${tag}" >/dev/null; then
     echo "Tag ${tag} already exists" >&2; exit 1
   fi
-  uv version --bump {{bump}}
-  uv lock
+  uv version --bump "$bump" --no-sync
+  uv lock --quiet
   VERSION="$version" python3 - <<'PY'
   import datetime, os, pathlib
   heading = f"## v{os.environ['VERSION']} - {datetime.date.today().isoformat()}"
