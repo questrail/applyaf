@@ -4,6 +4,8 @@ This file contains all notable changes to the [applyaf][] project.
 
 ## Unreleased
 
+## v3.0.0 - 2026-08-31
+
 ### Changed
 
 - **Breaking.** Analyzer frequencies falling outside the range covered by
