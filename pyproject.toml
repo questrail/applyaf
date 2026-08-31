@@ -5,6 +5,8 @@ name = "applyaf"
 version = "3.0.0"
 description = "Apply antenna factors and cable loss to spectrum analyzer measurements"
 readme = "README.md"
+license = "MIT"
+license-files = ["LICENSE.txt"]
 authors = [{ name = "Matthew Rankin", email = "matthew@questrail.com" }]
 requires-python = ">=3.12"
 dependencies = ["numpy>=2.2.0"]
@@ -13,7 +15,6 @@ classifiers = [
   'Programming Language :: Python :: 3',
   'Programming Language :: Python :: 3.12',
   'Programming Language :: Python :: 3.13',
-  'License :: OSI Approved :: MIT License',
   'Development Status :: 5 - Production/Stable',
   'Operating System :: OS Independent',
   'Intended Audience :: Developers',
@@ -32,10 +33,11 @@ build-backend = "hatchling.build"
 packages = ["src/applyaf"]
 
 [tool.ruff]
-# Pin the rule set so that lint results don't drift with the installed ruff.
 line-length = 88
 
 [tool.ruff.lint]
+# Select rules explicitly rather than relying on ruff's defaults, so that the
+# rule set is a deliberate choice. The ruff version itself is pinned by uv.lock.
 select = [
   "E",   # pycodestyle errors
   "W",   # pycodestyle warnings
@@ -48,6 +50,10 @@ select = [
   "PL",  # pylint
 ]
 
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = ["--strict-markers", "--strict-config"]
+
 [tool.coverage.run]
 source = ["applyaf"]
 branch = true
@@ -59,7 +65,7 @@ exclude_lines = ["pragma: no cover", "if TYPE_CHECKING:"]
 [tool.pyright]
 venvPath = "."
 venv = ".venv"
-include = ["src"]
+include = ["src", "tests"]
 
 [dependency-groups]
 dev = [
