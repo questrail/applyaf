@@ -84,7 +84,7 @@ Releasing from 3.0.1, with these entries under Unreleased:
 
     ### Fixed
 
-    - A pretend fix.
+    - `read_csv_file()` returned a 0-d array for a single row file.
 
     1) patch   3.0.1 -> 3.0.2
     2) minor   3.0.1 -> 3.1.0
