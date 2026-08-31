@@ -20,14 +20,62 @@ import numpy as np
 import numpy.typing as npt
 
 
-def read_csv_file(filename: str, freq_unit_multiplier: float) -> npt.NDArray:
-    """Read csv file into a numpy array"""
-    # FIXME: Test a file with blank lines in the CSV file.
+def _has_header(sample: str) -> bool:
+    """Determine whether a CSV sample starts with a header row.
+
+    csv.Sniffer decides by comparing the first row against the types of the
+    rows below it, so it has nothing to compare against in a single row file
+    and reports a header for what is actually data. Every file this module
+    reads holds numeric frequency/amplitude pairs, so a first row that parses
+    as numbers is data no matter what the sniffer concludes.
+
+    Args:
+        sample: The leading characters of a CSV file.
+
+    Returns:
+        True if the first row of the sample is a header row.
+    """
+    first_row = sample.split("\n", 1)[0]
+    try:
+        [float(field) for field in first_row.split(",")]
+    except ValueError:
+        # The first row isn't numeric, so let the sniffer weigh in.
+        pass
+    else:
+        return False
+
+    try:
+        return csv.Sniffer().has_header(sample)
+    except csv.Error:
+        # The sniffer couldn't determine a dialect. The first row isn't
+        # numeric, so treating it as a header is the better guess.
+        return True
+
+
+def read_csv_file(
+    filename: str,
+    freq_unit_multiplier: float,
+    header: bool | None = None,
+) -> npt.NDArray:
+    """Read csv file into a numpy array
+
+    Blank lines in the CSV file are ignored.
+
+    Args:
+        filename: Path to a two column CSV file of frequency and amplitude.
+        freq_unit_multiplier: Scale factor applied to the frequency column,
+            e.g. 1.0e6 for a file whose frequencies are given in MHz.
+        header: An optional boolean stating whether the file starts with a
+            header row. Detected automatically when None.
+
+    Returns:
+        A 1D numpy structured array with fields 'frequency' and
+        'amplitude_db'.
+    """
     with open(filename) as f:
-        # Determine if the CSV file has a header row
-        has_header = csv.Sniffer().has_header(f.read(1024))
-        # print('Header') if has_header else print('No header')
-        rows_to_skip = 1 if has_header else 0
+        if header is None:
+            header = _has_header(f.read(1024))
+        rows_to_skip = 1 if header else 0
         # Go back to the file's beginning and read it into np.array
         f.seek(0)
         array_to_return = np.loadtxt(
@@ -38,6 +86,8 @@ def read_csv_file(filename: str, freq_unit_multiplier: float) -> npt.NDArray:
             },
             delimiter=",",
             skiprows=rows_to_skip,
+            # Keep a single row file 1D so it stays indexable by field.
+            ndmin=1,
         )
         array_to_return["frequency"] *= freq_unit_multiplier
         return array_to_return
@@ -169,7 +219,7 @@ def apply_antenna_factor_show_af_cl(
             A 1D numpy array containing the antenna factors at the analyzer
                 frequencies.
             A 1D numpy array containing the cable losses at the analyzer
-                frequencies.
+                frequencies, or zeros if no cable losses were provided.
     """
 
     # Remove duplicates and keep the max or min
@@ -200,15 +250,16 @@ def apply_antenna_factor_show_af_cl(
             cable_losses_no_duplicates["frequency"],
             cable_losses_no_duplicates["amplitude_db"],
         )
-        incident_field = analyzer_readings_no_duplicates
-        incident_field["amplitude_db"] += antenna_factors_at_analyzer_frequencies
-        incident_field["amplitude_db"] += cable_losses_at_analyzer_frequencies
     else:
-        # There were no cable losses provided, so just apply the
-        # antenna factors.
-        incident_field = analyzer_readings_no_duplicates
-        incident_field["amplitude_db"] += antenna_factors_at_analyzer_frequencies
-        cable_losses_at_analyzer_frequencies = np.empty([1, 1])
+        # There were no cable losses provided, which is the same as 0 dB of
+        # loss at every analyzer frequency.
+        cable_losses_at_analyzer_frequencies = np.zeros_like(
+            antenna_factors_at_analyzer_frequencies
+        )
+
+    incident_field = analyzer_readings_no_duplicates
+    incident_field["amplitude_db"] += antenna_factors_at_analyzer_frequencies
+    incident_field["amplitude_db"] += cable_losses_at_analyzer_frequencies
 
     return (
         incident_field,

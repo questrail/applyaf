@@ -190,6 +190,112 @@ class TestApplyAntennaFactors:
         )
 
 
+@pytest.fixture
+def write_csv(tmp_path):
+    """Write text into a CSV file and return the filename."""
+
+    def _write_csv(name, text):
+        path = tmp_path / name
+        path.write_text(text)
+        return str(path)
+
+    return _write_csv
+
+
+class TestReadingCSVFileEdgeCases:
+    def test_single_data_row_with_header_stays_1d(self, write_csv):
+        # Without ndmin=1, np.loadtxt collapses a lone data row to a 0-d array,
+        # which raises an AxisError once np.sort reaches it downstream.
+        filename = write_csv(
+            "single_row.csv", "Frequency (MHz),Attenuation (dB)\n100,0.20\n"
+        )
+        data = applyaf.read_csv_file(filename, 1.0e6)
+        assert data.ndim == 1
+        assert data.size == 1
+        np.testing.assert_array_equal(data["frequency"], np.array([100e6]))
+        np.testing.assert_array_equal(data["amplitude_db"], np.array([0.20]))
+
+    def test_single_data_row_without_header_is_not_skipped(self, write_csv):
+        # csv.Sniffer reports a header for a lone data row because it has no
+        # other rows to compare it against, which silently dropped the data.
+        filename = write_csv("one_row_no_header.csv", "100,0.20\n")
+        data = applyaf.read_csv_file(filename, 1.0e6)
+        assert data.ndim == 1
+        assert data.size == 1
+        np.testing.assert_array_equal(data["frequency"], np.array([100e6]))
+        np.testing.assert_array_equal(data["amplitude_db"], np.array([0.20]))
+
+    def test_single_row_antenna_factors_apply_without_error(
+        self, write_csv, my_data_type
+    ):
+        filename = write_csv("single_row_af.csv", "100,13.0\n")
+        antenna_factors = applyaf.read_csv_file(filename, 1.0e6)
+        analyzer_readings = np.array([(300e6, 10.0), (350e6, 20.0)], dtype=my_data_type)
+        incident_field = applyaf.apply_antenna_factor(
+            analyzer_readings, antenna_factors
+        )
+        # A lone antenna factor is the interpolated value at every frequency.
+        np.testing.assert_array_almost_equal(
+            incident_field["amplitude_db"], np.array([23.0, 33.0])
+        )
+
+    def test_header_true_skips_the_first_row(self, write_csv):
+        filename = write_csv("numeric_header.csv", "100,0.20\n200,0.30\n")
+        data = applyaf.read_csv_file(filename, 1.0e6, header=True)
+        assert data.size == 1
+        np.testing.assert_array_equal(data["frequency"], np.array([200e6]))
+
+    def test_header_false_reads_every_row(self, write_csv):
+        filename = write_csv("no_header.csv", "100,0.20\n200,0.30\n")
+        data = applyaf.read_csv_file(filename, 1.0e6, header=False)
+        np.testing.assert_array_equal(data["frequency"], np.array([100e6, 200e6]))
+
+    def test_blank_lines_are_ignored(self, write_csv):
+        filename = write_csv(
+            "blank_lines.csv",
+            "Frequency (MHz),Attenuation (dB)\n100,0.20\n\n200,0.30\n\n",
+        )
+        data = applyaf.read_csv_file(filename, 1.0e6)
+        np.testing.assert_array_equal(data["frequency"], np.array([100e6, 200e6]))
+        np.testing.assert_array_equal(data["amplitude_db"], np.array([0.20, 0.30]))
+
+
+class TestAbsentCableLosses:
+    def test_absent_cable_losses_are_returned_as_zeros(
+        self, analyzer_readings, antenna_factors
+    ):
+        # This used to be np.empty([1, 1]), which handed back uninitialized
+        # memory in a shape that didn't match the antenna factors.
+        (
+            _,
+            antenna_factors_at_frequencies,
+            cable_losses_at_frequencies,
+        ) = applyaf.apply_antenna_factor_show_af_cl(analyzer_readings, antenna_factors)
+        assert cable_losses_at_frequencies.shape == antenna_factors_at_frequencies.shape
+        np.testing.assert_array_equal(
+            cable_losses_at_frequencies,
+            np.zeros_like(antenna_factors_at_frequencies),
+        )
+
+    def test_absent_cable_losses_match_explicit_zero_loss(
+        self, my_data_type, analyzer_readings, antenna_factors
+    ):
+        zero_cable_losses = np.array(
+            [(1e6, 0.0), (10e9, 0.0)],
+            dtype=my_data_type,
+        )
+        without_cable_losses = applyaf.apply_antenna_factor(
+            analyzer_readings.copy(), antenna_factors
+        )
+        with_zero_cable_losses = applyaf.apply_antenna_factor(
+            analyzer_readings.copy(), antenna_factors, zero_cable_losses
+        )
+        np.testing.assert_array_almost_equal(
+            without_cable_losses["amplitude_db"],
+            with_zero_cable_losses["amplitude_db"],
+        )
+
+
 # class TestRemoveDuplicates():
 #     def setUp(self):
 #         self.my_data_type = [("frequency", np.float64), ("amplitude_db", np.float64)]
