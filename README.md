@@ -55,6 +55,12 @@ Contributions are welcome! To contribute please:
 
 ### Development Setup Using uv
 
+#### Development Setup on macOS
+
+```bash
+$ brew install uv ruff just
+```
+
 With [uv][], [ruff][] and [Just][] installed, development has been simplified to
 simply running [Just][] to see the available commands.
 
@@ -64,16 +70,18 @@ $ just
 
 #### Deploying with uv
 
+`just deploy` lints, tests, builds, and publishes to PyPI, and refuses to run
+against a dirty working tree, so the version bump and the CHANGELOG need to be
+committed first.
+
 ```bash
-$ just test
+$ uv version --bump minor        # or major / patch
+$ # close out the Unreleased section of CHANGELOG.md
+$ uv lock
+$ git commit -am "Release vX.Y.Z"
 $ git tag -a vX.Y.Z -m "vX.Y.Z"
 $ just deploy
-```
-
-#### Development Setup on macOS
-
-```bash
-$ brew install uv ruff just
+$ git push --follow-tags
 ```
 
 ## License
@@ -86,11 +94,9 @@ $ brew install uv ruff just
 [ci link]: https://github.com/questrail/applyaf/actions/workflows/ci.yml
 [coveralls image]: https://coveralls.io/repos/github/questrail/applyaf/badge.svg?branch=master
 [coveralls link]: https://coveralls.io/github/questrail/applyaf?branch=master
-[invoke]: https://www.pyinvoke.org/
 [just]: https://just.systems/
 [LICENSE.txt]: https://github.com/questrail/applyaf/blob/master/LICENSE.txt
 [license image]: https://img.shields.io/pypi/l/applyaf.svg
-[numpy]: http://www.numpy.org
 [pull request]: https://help.github.com/articles/using-pull-requests
 [pypi ver image]: https://img.shields.io/pypi/v/applyaf.svg
 [pypi ver link]: https://pypi.python.org/pypi/applyaf
