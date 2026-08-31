@@ -1,7 +1,8 @@
 # applyaf
 
+[![PyPI Version][pypi ver image]][pypi ver link]
+[![Python Versions][pyversions image]][pypi ver link]
 [![CI Status][ci image]][ci link]
-[![PyPi Version][pypi ver image]][pypi ver link]
 [![Coverage Status][coveralls image]][coveralls link]
 [![License Badge][license image]][LICENSE.txt]
 
@@ -100,6 +101,7 @@ $ git push --follow-tags
 [pull request]: https://help.github.com/articles/using-pull-requests
 [pypi ver image]: https://img.shields.io/pypi/v/applyaf.svg
 [pypi ver link]: https://pypi.python.org/pypi/applyaf
+[pyversions image]: https://img.shields.io/pypi/pyversions/applyaf.svg
 [ruff]: https://docs.astral.sh/ruff/
 [siganalysis]: https://github.com/questrail/siganalysis
 [uv]: https://docs.astral.sh/uv/
