@@ -4,6 +4,15 @@ This file contains all notable changes to the [applyaf][] project.
 
 ## Unreleased
 
+### Changed
+
+- **Breaking.** Analyzer frequencies falling outside the range covered by
+  the antenna factors or cable losses now raise a `ValueError` naming the
+  calibrated span. `np.interp()` had been silently clamping them to the
+  nearest calibrated amplitude, substituting a value that was never
+  measured. Pass the new `allow_extrapolation=True` to restore the
+  previous behaviour.
+
 ### Fixed
 
 - `read_csv_file()` returned a 0-d array for a CSV file holding a single

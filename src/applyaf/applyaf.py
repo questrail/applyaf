@@ -124,11 +124,59 @@ def _remove_duplicate_frequencies(
     return sorted_array[unique_indices]
 
 
+def _interpolate_at(
+    frequencies: npt.NDArray,
+    calibration: npt.NDArray,
+    description: str,
+    allow_extrapolation: bool,
+) -> npt.NDArray:
+    """Interpolate calibration data onto the given frequencies.
+
+    np.interp() clamps anything outside the calibration range to the nearest
+    endpoint rather than extrapolating, which silently substitutes an
+    amplitude that was never measured. Refuse to do that unless asked.
+
+    Args:
+        frequencies: A 1D numpy array of frequencies to interpolate onto.
+        calibration: A 1D numpy structured array with the fields 'frequency'
+            and 'amplitude_db', already sorted and free of duplicates.
+        description: What the calibration data represents, used in the error
+            message.
+        allow_extrapolation: A boolean determining whether frequencies outside
+            the calibration range are permitted, in which case they take the
+            nearest calibrated amplitude.
+
+    Returns:
+        A 1D numpy array of amplitudes at the given frequencies.
+
+    Raises:
+        ValueError: If any frequency falls outside the calibration range and
+            allow_extrapolation is False.
+    """
+    if not allow_extrapolation:
+        lowest = calibration["frequency"].min()
+        highest = calibration["frequency"].max()
+        outside = (frequencies < lowest) | (frequencies > highest)
+        if outside.any():
+            raise ValueError(
+                f"{outside.sum()} of {frequencies.size} frequencies fall "
+                f"outside the {description}, which span {lowest:.6g} Hz to "
+                f"{highest:.6g} Hz. The frequencies in question run from "
+                f"{frequencies[outside].min():.6g} Hz to "
+                f"{frequencies[outside].max():.6g} Hz and would be clamped to "
+                f"the nearest calibrated amplitude. Pass "
+                f"allow_extrapolation=True to accept that."
+            )
+
+    return np.interp(frequencies, calibration["frequency"], calibration["amplitude_db"])
+
+
 def apply_antenna_factor(
     analyzer_readings: npt.NDArray,
     antenna_factors: npt.NDArray,
     cable_losses: npt.NDArray | None = None,
     keep_max: bool = True,
+    allow_extrapolation: bool = False,
 ) -> npt.NDArray:
     """Apply the antenna factor and cable losses to the input data.
 
@@ -164,16 +212,26 @@ def apply_antenna_factor(
             antenna_factors and cable_losses, so duplicate readings at one
             frequency are reduced to a single value and the returned array
             can be shorter than the input.
+        allow_extrapolation: An optional boolean determining whether analyzer
+            frequencies may fall outside the range covered by the antenna
+            factors and cable losses. Those frequencies take the nearest
+            calibrated amplitude, which was never measured, so this defaults
+            to False and such frequencies raise instead.
 
     Returns:
         A 1D numpy structured array containing the incident field.
+
+    Raises:
+        ValueError: If any analyzer frequency falls outside the range covered
+            by the antenna factors or cable losses and allow_extrapolation is
+            False.
     """
     (
         incident_field,
         _,
         _,
     ) = apply_antenna_factor_show_af_cl(
-        analyzer_readings, antenna_factors, cable_losses, keep_max
+        analyzer_readings, antenna_factors, cable_losses, keep_max, allow_extrapolation
     )
     return incident_field
 
@@ -183,6 +241,7 @@ def apply_antenna_factor_show_af_cl(
     antenna_factors: npt.NDArray,
     cable_losses: npt.NDArray | None = None,
     keep_max: bool = True,
+    allow_extrapolation: bool = False,
 ) -> tuple[npt.NDArray, npt.NDArray, npt.NDArray]:
     """Apply the antenna factor and cable losses to the input data and show the
     antenna factors and cable losses at the analyzer frequencies in addition to
@@ -220,6 +279,11 @@ def apply_antenna_factor_show_af_cl(
             antenna_factors and cable_losses, so duplicate readings at one
             frequency are reduced to a single value and the returned array
             can be shorter than the input.
+        allow_extrapolation: An optional boolean determining whether analyzer
+            frequencies may fall outside the range covered by the antenna
+            factors and cable losses. Those frequencies take the nearest
+            calibrated amplitude, which was never measured, so this defaults
+            to False and such frequencies raise instead.
 
     Returns:
         A tuple containing:
@@ -228,6 +292,11 @@ def apply_antenna_factor_show_af_cl(
                 frequencies.
             A 1D numpy array containing the cable losses at the analyzer
                 frequencies, or zeros if no cable losses were provided.
+
+    Raises:
+        ValueError: If any analyzer frequency falls outside the range covered
+            by the antenna factors or cable losses and allow_extrapolation is
+            False.
     """
 
     # Remove duplicates and keep the max or min
@@ -240,10 +309,11 @@ def apply_antenna_factor_show_af_cl(
 
     # Interpolate the antenna factors so that they align
     # with the frequencies found in the spectrum analyzer readings
-    antenna_factors_at_analyzer_frequencies = np.interp(
+    antenna_factors_at_analyzer_frequencies = _interpolate_at(
         analyzer_readings_no_duplicates["frequency"],
-        antenna_factors_no_duplicates["frequency"],
-        antenna_factors_no_duplicates["amplitude_db"],
+        antenna_factors_no_duplicates,
+        "frequencies covered by the antenna factors",
+        allow_extrapolation,
     )
 
     if isinstance(cable_losses, np.ndarray):
@@ -253,10 +323,11 @@ def apply_antenna_factor_show_af_cl(
         cable_losses_no_duplicates = _remove_duplicate_frequencies(
             cable_losses, keep_max
         )
-        cable_losses_at_analyzer_frequencies = np.interp(
+        cable_losses_at_analyzer_frequencies = _interpolate_at(
             analyzer_readings_no_duplicates["frequency"],
-            cable_losses_no_duplicates["frequency"],
-            cable_losses_no_duplicates["amplitude_db"],
+            cable_losses_no_duplicates,
+            "frequencies covered by the cable losses",
+            allow_extrapolation,
         )
     else:
         # There were no cable losses provided, which is the same as 0 dB of
@@ -281,6 +352,7 @@ def remove_antenna_factor(
     antenna_factors: npt.NDArray,
     cable_losses: npt.NDArray | None = None,
     keep_max: bool = True,
+    allow_extrapolation: bool = False,
 ) -> npt.NDArray:
     """Remove the antenna factor and cable losses from the input data.
 
@@ -306,9 +378,19 @@ def remove_antenna_factor(
             antenna_factors and cable_losses, so duplicate readings at one
             frequency are reduced to a single value and the returned array
             can be shorter than the input.
+        allow_extrapolation: An optional boolean determining whether analyzer
+            frequencies may fall outside the range covered by the antenna
+            factors and cable losses. Those frequencies take the nearest
+            calibrated amplitude, which was never measured, so this defaults
+            to False and such frequencies raise instead.
 
     Returns:
         A 1D numpy structured array containing the analyzer readings.
+
+    Raises:
+        ValueError: If any analyzer frequency falls outside the range covered
+            by the antenna factors or cable losses and allow_extrapolation is
+            False.
     """
 
     # Remove duplicates and keep the max or min
@@ -321,10 +403,11 @@ def remove_antenna_factor(
 
     # Interpolate the antenna factors so that they align
     # with the frequencies found in the spectrum analyzer readings
-    antenna_factors_at_analyzer_frequencies = np.interp(
+    antenna_factors_at_analyzer_frequencies = _interpolate_at(
         analyzer_readings_no_duplicates["frequency"],
-        antenna_factors_no_duplicates["frequency"],
-        antenna_factors_no_duplicates["amplitude_db"],
+        antenna_factors_no_duplicates,
+        "frequencies covered by the antenna factors",
+        allow_extrapolation,
     )
 
     if isinstance(cable_losses, np.ndarray):
@@ -334,10 +417,11 @@ def remove_antenna_factor(
         cable_losses_no_duplicates = _remove_duplicate_frequencies(
             cable_losses, keep_max
         )
-        cable_losses_at_analyzer_frequencies = np.interp(
+        cable_losses_at_analyzer_frequencies = _interpolate_at(
             analyzer_readings_no_duplicates["frequency"],
-            cable_losses_no_duplicates["frequency"],
-            cable_losses_no_duplicates["amplitude_db"],
+            cable_losses_no_duplicates,
+            "frequencies covered by the cable losses",
+            allow_extrapolation,
         )
         incident_field = analyzer_readings_no_duplicates
         incident_field["amplitude_db"] -= antenna_factors_at_analyzer_frequencies

@@ -232,7 +232,7 @@ class TestReadingCSVFileEdgeCases:
         antenna_factors = applyaf.read_csv_file(filename, 1.0e6)
         analyzer_readings = np.array([(300e6, 10.0), (350e6, 20.0)], dtype=my_data_type)
         incident_field = applyaf.apply_antenna_factor(
-            analyzer_readings, antenna_factors
+            analyzer_readings, antenna_factors, allow_extrapolation=True
         )
         # A lone antenna factor is the interpolated value at every frequency.
         np.testing.assert_array_almost_equal(
@@ -294,6 +294,91 @@ class TestAbsentCableLosses:
             without_cable_losses["amplitude_db"],
             with_zero_cable_losses["amplitude_db"],
         )
+
+
+class TestOutOfRangeFrequencies:
+    @pytest.fixture
+    def antenna_factors_290_to_400(self, my_data_type):
+        return np.array([(290e6, 13.0), (400e6, 15.9)], dtype=my_data_type)
+
+    @pytest.fixture
+    def cable_losses_100_to_1000(self, my_data_type):
+        return np.array([(100e6, 0.20), (1000e6, 0.61)], dtype=my_data_type)
+
+    def test_readings_below_the_antenna_factor_range_raise(
+        self, my_data_type, antenna_factors_290_to_400
+    ):
+        readings = np.array([(1e6, 10.0), (300e6, 10.0)], dtype=my_data_type)
+        with pytest.raises(ValueError, match="antenna factors"):
+            applyaf.apply_antenna_factor(readings, antenna_factors_290_to_400)
+
+    def test_readings_above_the_antenna_factor_range_raise(
+        self, my_data_type, antenna_factors_290_to_400
+    ):
+        readings = np.array([(300e6, 10.0), (10e9, 10.0)], dtype=my_data_type)
+        with pytest.raises(ValueError, match="antenna factors"):
+            applyaf.apply_antenna_factor(readings, antenna_factors_290_to_400)
+
+    def test_the_error_reports_the_calibrated_span(
+        self, my_data_type, antenna_factors_290_to_400
+    ):
+        readings = np.array([(1e6, 10.0)], dtype=my_data_type)
+        with pytest.raises(ValueError) as excinfo:
+            applyaf.apply_antenna_factor(readings, antenna_factors_290_to_400)
+        message = str(excinfo.value)
+        assert "2.9e+08 Hz to 4e+08 Hz" in message
+        assert "allow_extrapolation=True" in message
+
+    def test_readings_outside_the_cable_loss_range_raise(
+        self, my_data_type, antenna_factors_290_to_400
+    ):
+        # In range for the antenna factors, out of range for the cable losses.
+        readings = np.array([(300e6, 10.0), (350e6, 10.0)], dtype=my_data_type)
+        narrow_cable_losses = np.array([(310e6, 0.3), (320e6, 0.3)], dtype=my_data_type)
+        with pytest.raises(ValueError, match="cable losses"):
+            applyaf.apply_antenna_factor(
+                readings, antenna_factors_290_to_400, narrow_cable_losses
+            )
+
+    def test_readings_on_the_endpoints_are_allowed(
+        self, my_data_type, antenna_factors_290_to_400
+    ):
+        readings = np.array([(290e6, 10.0), (400e6, 10.0)], dtype=my_data_type)
+        incident_field = applyaf.apply_antenna_factor(
+            readings, antenna_factors_290_to_400
+        )
+        np.testing.assert_array_almost_equal(
+            incident_field["amplitude_db"], np.array([23.0, 25.9])
+        )
+
+    def test_allow_extrapolation_clamps_to_the_nearest_amplitude(
+        self, my_data_type, antenna_factors_290_to_400
+    ):
+        readings = np.array(
+            [(1e6, 10.0), (300e6, 10.0), (10e9, 10.0)], dtype=my_data_type
+        )
+        incident_field = applyaf.apply_antenna_factor(
+            readings, antenna_factors_290_to_400, allow_extrapolation=True
+        )
+        # The out of range readings take the endpoint antenna factors, 13.0
+        # and 15.9, rather than an extrapolated value.
+        np.testing.assert_array_almost_equal(
+            incident_field["amplitude_db"], np.array([23.0, 23.2636364, 25.9])
+        )
+
+    def test_remove_antenna_factor_raises_as_well(
+        self, my_data_type, antenna_factors_290_to_400
+    ):
+        incident_field = np.array([(1e6, 25.0)], dtype=my_data_type)
+        with pytest.raises(ValueError, match="antenna factors"):
+            applyaf.remove_antenna_factor(incident_field, antenna_factors_290_to_400)
+
+    def test_show_af_cl_raises_as_well(self, my_data_type, antenna_factors_290_to_400):
+        readings = np.array([(1e6, 10.0)], dtype=my_data_type)
+        with pytest.raises(ValueError, match="antenna factors"):
+            applyaf.apply_antenna_factor_show_af_cl(
+                readings, antenna_factors_290_to_400
+            )
 
 
 # class TestRemoveDuplicates():
