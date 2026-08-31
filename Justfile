@@ -26,6 +26,11 @@ lint:
 test:
   uv run pytest
 
+# Test code and report coverage
+[group('test')]
+cov:
+  uv run pytest --cov --cov-report=term --cov-report=html
+
 # Add dependency
 [group('dependencies')]
 add dep:

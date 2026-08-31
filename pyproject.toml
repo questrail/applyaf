@@ -48,6 +48,14 @@ select = [
   "PL",  # pylint
 ]
 
+[tool.coverage.run]
+source = ["applyaf"]
+branch = true
+
+[tool.coverage.report]
+show_missing = true
+exclude_lines = ["pragma: no cover", "if TYPE_CHECKING:"]
+
 [tool.pyright]
 venvPath = "."
 venv = ".venv"
@@ -57,5 +65,6 @@ include = ["src"]
 dev = [
     "pyright>=1.1.411",
     "pytest>=8.3.4",
+    "pytest-cov>=7.1.0",
     "ruff>=0.16.5",
 ]

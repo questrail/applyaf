@@ -1,5 +1,6 @@
 # applyaf
 
+[![CI Status][ci image]][ci link]
 [![PyPi Version][pypi ver image]][pypi ver link]
 [![Coverage Status][coveralls image]][coveralls link]
 [![License Badge][license image]][LICENSE.txt]
@@ -81,15 +82,17 @@ $ brew install uv ruff just
 [LICENSE.txt][] file for more information.
 
 [applyaf]: https://github.com/questrail/applyaf
-[coveralls image]: http://img.shields.io/coveralls/questrail/applyaf/master.svg
-[coveralls link]: https://coveralls.io/r/questrail/applyaf
+[ci image]: https://github.com/questrail/applyaf/actions/workflows/ci.yml/badge.svg?branch=master
+[ci link]: https://github.com/questrail/applyaf/actions/workflows/ci.yml
+[coveralls image]: https://coveralls.io/repos/github/questrail/applyaf/badge.svg?branch=master
+[coveralls link]: https://coveralls.io/github/questrail/applyaf?branch=master
 [invoke]: https://www.pyinvoke.org/
 [just]: https://just.systems/
-[LICENSE.txt]: https://github.com/questrail/applyaf/blob/develop/LICENSE.txt
-[license image]: http://img.shields.io/pypi/l/applyaf.svg
+[LICENSE.txt]: https://github.com/questrail/applyaf/blob/master/LICENSE.txt
+[license image]: https://img.shields.io/pypi/l/applyaf.svg
 [numpy]: http://www.numpy.org
 [pull request]: https://help.github.com/articles/using-pull-requests
-[pypi ver image]: http://img.shields.io/pypi/v/applyaf.svg
+[pypi ver image]: https://img.shields.io/pypi/v/applyaf.svg
 [pypi ver link]: https://pypi.python.org/pypi/applyaf
 [ruff]: https://docs.astral.sh/ruff/
 [siganalysis]: https://github.com/questrail/siganalysis
