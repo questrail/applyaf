@@ -9,6 +9,21 @@ This file contains all notable changes to the [applyaf][] project.
 - Restore the `_remove_duplicate_frequencies()` tests, which had been
   commented out, as pytest classes.
 
+### Changed
+
+- Declare the license as a PEP 639 `license = "MIT"` expression with
+  `license-files`, replacing the `License :: OSI Approved` classifier
+  that PEP 639 deprecates. Built distributions now carry
+  `License-Expression: MIT` under metadata version 2.5 and ship
+  `LICENSE.txt` in `dist-info/licenses`.
+- Configure pytest in `pyproject.toml`, which had none of its own
+  despite `just test` and `just cov` driving it. `testpaths` aims
+  collection at the suite, and `--strict-markers` and `--strict-config`
+  turn a mistyped marker or an unknown config key into a failure rather
+  than a silent no-op.
+- Type check `tests/` with pyright, which had covered only `src/` while
+  ruff checked both.
+
 ## v3.0.0 - 2026-08-31
 
 ### Changed
