@@ -1,15 +1,11 @@
 # AUTHORS.md
 
-This file lists the authors, maintainers, and contributors for the
-[applyaf][] project.
+This file lists the authors and maintainers of the [applyaf][] project.
 
 ## Authors
 - Matthew Rankin
 
 ## Maintainers
-- None at this time.
-
-## Contributors
-- None at this time.
+- Matthew Rankin
 
 [applyaf]: https://github.com/questrail/applyaf
