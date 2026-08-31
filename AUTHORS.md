@@ -1,4 +1,5 @@
-# AUTHOR.md
+# AUTHORS.md
+
 This file lists the authors, maintainers, and contributors for the
 [applyaf][] project.
 
