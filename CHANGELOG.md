@@ -17,6 +17,11 @@ This file contains all notable changes to the [applyaf][] project.
   uninitialized memory in a shape that doesn't match the antenna
   factors. It now returns zeros, which is also the correct 0 dB of loss.
 
+- Correct the docstrings, which advertised a magnetic field equation the
+  code cannot produce, understated the scope of `keep_max`, described
+  `remove_antenna_factor()` as if it were the forward operation, and
+  misspelled the `cable_losses` argument.
+
 ### Added
 
 - `header` argument to `read_csv_file()` to override header detection.

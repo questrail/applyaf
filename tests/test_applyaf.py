@@ -133,7 +133,8 @@ class TestApplyAntennaFactors:
     def test_applying_antenna_factor(
         self, analyzer_readings, antenna_factors, cable_losses, known_incident_field
     ):
-        # FIXME: Why did I drop one data point?
+        # The sample readings hold 3.20238e8 twice, and keep_max defaults to
+        # True, so the seven readings reduce to the six frequencies below.
         calculated_incident_field = applyaf.apply_antenna_factor(
             analyzer_readings, antenna_factors, cable_losses
         )
