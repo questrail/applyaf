@@ -4,6 +4,11 @@ This file contains all notable changes to the [applyaf][] project.
 
 ## Unreleased
 
+### Added
+
+- Restore the `_remove_duplicate_frequencies()` tests, which had been
+  commented out, as pytest classes.
+
 ## v3.0.0 - 2026-08-31
 
 ### Changed
