@@ -4,6 +4,8 @@ This file contains all notable changes to the [applyaf][] project.
 
 ## Unreleased
 
+## v3.0.1 - 2026-08-31
+
 ### Added
 
 - Restore the `_remove_duplicate_frequencies()` tests, which had been
