@@ -23,13 +23,13 @@ lint:
 
 # Test code using pytest
 [group('test')]
-test:
-  uv run pytest
+test *args:
+  uv run pytest {{args}}
 
 # Test code and report coverage
 [group('test')]
-cov:
-  uv run pytest --cov --cov-report=term --cov-report=html
+cov *args:
+  uv run pytest --cov --cov-report=term --cov-report=html {{args}}
 
 # Add dependency
 [group('dependencies')]
@@ -41,12 +41,17 @@ add dep:
 dev dep:
   uv add --dev {{dep}}
 
-# Update dependency
+# Update dependency to the newest version allowed by pyproject.toml
 [group('dependencies')]
 up dep:
-  uv remove {{dep}}
-  uv add {{dep}}
-  uv lock -P {{dep}}
+  uv lock --upgrade-package {{dep}}
+  uv sync
+
+# Update all dependencies
+[group('dependencies')]
+up-all:
+  uv lock --upgrade
+  uv sync
 
 # List the outdated dependencies
 [group('dependencies')]
@@ -61,5 +66,6 @@ lock:
 # Check, test, build, and publish to PyPI
 [group('deploy')]
 deploy: lint test
-  uv build
+  @test -z "$(git status --porcelain)" || { echo "Working tree is dirty"; exit 1; }
+  uv build --clear
   uv publish
