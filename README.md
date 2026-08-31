@@ -75,7 +75,13 @@ $ just
 against a dirty working tree, so the version bump and the CHANGELOG need to be
 committed first.
 
+`uv publish` reads its PyPI API token from `UV_PUBLISH_TOKEN`. Export one into
+the release shell, since there is no trusted publishing to fall back on outside
+of CI. Run `uv publish --dry-run` to check the built artifacts without
+uploading them.
+
 ```bash
+$ export UV_PUBLISH_TOKEN=pypi-...   # from your PyPI account, never committed
 $ uv version --bump minor        # or major / patch
 $ # in CHANGELOG.md, insert a "## vX.Y.Z - YYYY-MM-DD" heading directly
 $ # below "## Unreleased" so the accumulated entries sit under the new version
