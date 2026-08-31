@@ -32,6 +32,12 @@ This file contains all notable changes to the [applyaf][] project.
   version in `pyproject.toml`. `just deploy` becomes `just build`, which
   runs the same checks and produces the same distributions locally
   without publishing them.
+- Cut releases with `just release`, which lints, tests, bumps the
+  version, closes out the CHANGELOG, locks, commits, and tags in one
+  step, leaving only `git push --follow-tags` to publish. It refuses a
+  dirty tree, a branch other than `master`, a `master` behind its
+  upstream, an empty Unreleased section, and a tag that already exists,
+  and a refusal leaves the version and the CHANGELOG untouched.
 
 ## v3.0.0 - 2026-08-31
 

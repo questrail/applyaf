@@ -71,30 +71,30 @@ $ just
 
 #### Releasing to PyPI
 
-Pushing a `vX.Y.Z` tag runs the [release workflow][], which rechecks the tag
-against the version in `pyproject.toml`, lints, type checks, tests, builds, and
-publishes. There is no PyPI API token anywhere: the workflow authenticates with
-[trusted publishing][], which mints a short lived credential from the GitHub
-OIDC identity of that run.
-
-`just build` runs the same checks and produces the same distributions locally,
-so the artifacts can be inspected before the tag goes out. It refuses to run
-against a dirty working tree, which means the version bump and the CHANGELOG
-have to be committed first.
+`just release` cuts the release. It lints, type checks, tests, bumps the
+version, closes out the CHANGELOG, updates the lock file, commits, and tags.
+Pushing the tag is what publishes.
 
 ```bash
-$ uv version --bump minor        # or major / patch
-$ # in CHANGELOG.md, insert a "## vX.Y.Z - YYYY-MM-DD" heading directly
-$ # below "## Unreleased" so the accumulated entries sit under the new version
-$ uv lock
-$ git commit -am "Release vX.Y.Z"
-$ just build                     # optional: verify what CI will publish
-$ git tag -a vX.Y.Z -m "vX.Y.Z"
-$ git push --follow-tags         # this is the release
+$ just release           # patch; or: just release minor / just release major
+$ git push --follow-tags
 ```
 
-The tag is what publishes, so it is the point of no return: PyPI never lets a
-version number be reused. Everything before the push can be amended freely.
+The tag push runs the [release workflow][], which rechecks the tag against the
+version in `pyproject.toml`, repeats the checks, builds, and uploads. There is
+no PyPI API token anywhere: the workflow authenticates with [trusted
+publishing][], which mints a short lived credential from the GitHub OIDC
+identity of that run.
+
+Pushing the tag is the point of no return, since PyPI never lets a version
+number be reused. Everything `just release` does is local and amendable until
+then, and it refuses to start against a dirty working tree, off `master`, on a
+`master` behind its upstream, with a CHANGELOG whose Unreleased section is
+empty, or when the tag it would create already exists. A refusal leaves the
+version and the CHANGELOG untouched.
+
+`just build` runs the same checks and produces the same distributions without
+releasing anything, which is the way to inspect what CI would upload.
 
 This depends on one piece of configuration that lives outside the repository. A
 [trusted publisher][trusted publishing] has to be registered for `applyaf` on
