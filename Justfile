@@ -63,9 +63,8 @@ out:
 lock:
   uv lock
 
-# Check, test, build, and publish to PyPI
+# Check, test, and build the distributions that CI will publish
 [group('deploy')]
-deploy: lint test
+build: lint test
   @test -z "$(git status --porcelain)" || { echo "Working tree is dirty"; exit 1; }
   uv build --clear
-  uv publish

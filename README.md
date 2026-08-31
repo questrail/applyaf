@@ -69,28 +69,37 @@ simply running [Just][] to see the available commands.
 $ just
 ```
 
-#### Deploying with uv
+#### Releasing to PyPI
 
-`just deploy` lints, tests, builds, and publishes to PyPI, and refuses to run
-against a dirty working tree, so the version bump and the CHANGELOG need to be
-committed first.
+Pushing a `vX.Y.Z` tag runs the [release workflow][], which rechecks the tag
+against the version in `pyproject.toml`, lints, type checks, tests, builds, and
+publishes. There is no PyPI API token anywhere: the workflow authenticates with
+[trusted publishing][], which mints a short lived credential from the GitHub
+OIDC identity of that run.
 
-`uv publish` reads its PyPI API token from `UV_PUBLISH_TOKEN`. Export one into
-the release shell, since there is no trusted publishing to fall back on outside
-of CI. Run `uv publish --dry-run` to check the built artifacts without
-uploading them.
+`just build` runs the same checks and produces the same distributions locally,
+so the artifacts can be inspected before the tag goes out. It refuses to run
+against a dirty working tree, which means the version bump and the CHANGELOG
+have to be committed first.
 
 ```bash
-$ export UV_PUBLISH_TOKEN=pypi-...   # from your PyPI account, never committed
 $ uv version --bump minor        # or major / patch
 $ # in CHANGELOG.md, insert a "## vX.Y.Z - YYYY-MM-DD" heading directly
 $ # below "## Unreleased" so the accumulated entries sit under the new version
 $ uv lock
 $ git commit -am "Release vX.Y.Z"
+$ just build                     # optional: verify what CI will publish
 $ git tag -a vX.Y.Z -m "vX.Y.Z"
-$ just deploy
-$ git push --follow-tags
+$ git push --follow-tags         # this is the release
 ```
+
+The tag is what publishes, so it is the point of no return: PyPI never lets a
+version number be reused. Everything before the push can be amended freely.
+
+This depends on one piece of configuration that lives outside the repository. A
+[trusted publisher][trusted publishing] has to be registered for `applyaf` on
+PyPI, pointing at the `questrail/applyaf` repository, the `release.yml`
+workflow, and the `pypi` environment. It is a one time setup per project.
 
 ## License
 
@@ -109,6 +118,8 @@ $ git push --follow-tags
 [pypi ver image]: https://img.shields.io/pypi/v/applyaf.svg
 [pypi ver link]: https://pypi.python.org/pypi/applyaf
 [pyversions image]: https://img.shields.io/pypi/pyversions/applyaf.svg
+[release workflow]: https://github.com/questrail/applyaf/blob/master/.github/workflows/release.yml
 [ruff]: https://docs.astral.sh/ruff/
 [siganalysis]: https://github.com/questrail/siganalysis
+[trusted publishing]: https://docs.pypi.org/trusted-publishers/
 [uv]: https://docs.astral.sh/uv/

@@ -25,6 +25,13 @@ This file contains all notable changes to the [applyaf][] project.
   than a silent no-op.
 - Type check `tests/` with pyright, which had covered only `src/` while
   ruff checked both.
+- Publish to PyPI from a `release.yml` workflow that a `vX.Y.Z` tag
+  triggers, authenticating with trusted publishing rather than a
+  `UV_PUBLISH_TOKEN` API token, so no long lived credential exists for
+  the project. The workflow refuses a tag that disagrees with the
+  version in `pyproject.toml`. `just deploy` becomes `just build`, which
+  runs the same checks and produces the same distributions locally
+  without publishing them.
 
 ## v3.0.0 - 2026-08-31
 
