@@ -66,16 +66,17 @@ lock:
 # Check, test, and build the distributions that CI will publish
 [group('deploy')]
 build: lint test
-  @test -z "$(git status --porcelain)" || { echo "Working tree is dirty"; exit 1; }
   uv build --clear
 
-# Cut a release: pick the version, close out the CHANGELOG, commit, and tag
+# Cut a release
 [group('deploy')]
 release: lint test
   #!/usr/bin/env bash
   set -euo pipefail
   if [ -n "$(git status --porcelain)" ]; then
-    echo "Working tree is dirty" >&2; exit 1
+    echo "Working tree is dirty; commit or stash these first:" >&2
+    git status --short >&2
+    exit 1
   fi
   if [ "$(git branch --show-current)" != master ]; then
     echo "Releases are cut from master" >&2; exit 1
