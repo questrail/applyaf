@@ -24,7 +24,7 @@ requires-dist = [{ name = "numpy", specifier = ">=2.2.0" }]
 [package.metadata.requires-dev]
 dev = [
     { name = "pyright", specifier = ">=1.1.411" },
-    { name = "pytest", specifier = ">=8.3.4" },
+    { name = "pytest", specifier = ">=9.0.3" },
     { name = "pytest-cov", specifier = ">=7.1.0" },
     { name = "ruff", specifier = ">=0.16.5" },
 ]
