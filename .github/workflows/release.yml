@@ -10,11 +10,13 @@ jobs:
     runs-on: ubuntu-latest
 
     # Trusted publishing mints a short lived token from this OIDC identity, so
-    # there is no PyPI API token to store, rotate, or leak.
+    # there is no PyPI API token to store, rotate, or leak. contents: write is
+    # what lets the last step create the GitHub release.
     environment:
       name: pypi
       url: https://pypi.org/p/applyaf
     permissions:
+      contents: write
       id-token: write
 
     steps:
@@ -81,5 +83,47 @@ jobs:
           print(f"applyaf {installed} imported from {applyaf.__file__}")
           PY
 
+      # Done before the upload, since a CHANGELOG that has no section for this
+      # version should stop the release while stopping it is still possible.
+      - name: Collect the release notes from the CHANGELOG
+        run: |
+          VERSION="${GITHUB_REF_NAME#v}" python3 - > "${RUNNER_TEMP}/release-notes.md" <<'PY'
+          import os
+          import pathlib
+          import re
+
+          version = os.environ["VERSION"]
+          changelog = pathlib.Path("CHANGELOG.md").read_text()
+
+          # The section runs from its heading to the next heading, or to the
+          # link reference definitions at the foot of the file.
+          match = re.search(
+              rf"^## v{re.escape(version)} - \d{{4}}-\d{{2}}-\d{{2}}\s*\n(.*?)(?=^## |^\[[^\]]+\]: |\Z)",
+              changelog,
+              re.S | re.M,
+          )
+          if match is None:
+              raise SystemExit(f"CHANGELOG.md has no section for v{version}")
+          notes = match.group(1).strip()
+          if not notes:
+              raise SystemExit(f"The CHANGELOG.md section for v{version} is empty")
+
+          # Carry the definitions along so that a [#12][] style reference in the
+          # section still resolves once GitHub renders it on its own. Unused
+          # ones render as nothing.
+          definitions = re.findall(r"^\[[^\]]+\]:.*$", changelog, re.M)
+          print("\n\n".join([notes, *(["\n".join(definitions)] if definitions else [])]))
+          PY
+
       - name: Publish to PyPI
         run: uv publish --trusted-publishing always
+
+      - name: Create the GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "$GITHUB_REF_NAME" \
+            --title "$GITHUB_REF_NAME" \
+            --notes-file "${RUNNER_TEMP}/release-notes.md" \
+            --verify-tag \
+            dist/*

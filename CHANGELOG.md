@@ -6,6 +6,13 @@ This file contains all notable changes to the [applyaf][] project.
 
 ### Added
 
+- Create a GitHub release for each tag from the release workflow, with
+  the CHANGELOG section for that version as the notes and the built
+  distributions as the assets. Ten tags had been pushed without one, so
+  the Releases page was empty and the version history was only readable
+  from this file. The notes are collected before the upload rather than
+  after, so that a CHANGELOG with no section for the version being
+  released stops the release while stopping it is still possible.
 - Smoke test the built wheel before publishing it. Every other check
   runs against the source tree with `src/` on the path, so a packaging
   mistake that left a module or `py.typed` out of the distribution

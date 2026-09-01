@@ -111,6 +111,12 @@ distribution. It uploads once that passes. There is no PyPI API token anywhere:
 the workflow authenticates with [trusted publishing][], which mints a short
 lived credential from the GitHub OIDC identity of that run.
 
+Uploading is followed by a [GitHub release][releases] for the tag, carrying the
+CHANGELOG section for that version as its notes and the built distributions as
+its assets. The notes are collected before the upload rather than after, so that
+a CHANGELOG with no section for the version being released stops the release
+while stopping it is still possible.
+
 Pushing the tag is the point of no return, since PyPI never lets a version
 number be reused. Everything `just release` does is local and amendable until
 then, and it refuses to start against a dirty working tree, off `master`, on a
@@ -144,6 +150,7 @@ workflow, and the `pypi` environment. It is a one time setup per project.
 [pypi ver link]: https://pypi.python.org/pypi/applyaf
 [pyversions image]: https://img.shields.io/pypi/pyversions/applyaf.svg
 [release workflow]: https://github.com/questrail/applyaf/blob/master/.github/workflows/release.yml
+[releases]: https://github.com/questrail/applyaf/releases
 [ruff]: https://docs.astral.sh/ruff/
 [siganalysis]: https://github.com/questrail/siganalysis
 [trusted publishing]: https://docs.pypi.org/trusted-publishers/
