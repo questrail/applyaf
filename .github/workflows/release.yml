@@ -54,5 +54,32 @@ jobs:
       - name: Build the distributions
         run: uv build
 
+      # Every check above runs against the source tree, so a packaging mistake
+      # that leaves something out of the wheel passes all of them. Install the
+      # wheel that is about to be uploaded into an environment that has no path
+      # to src/ and exercise it there instead.
+      - name: Smoke test the built wheel
+        run: |
+          uv run --no-project --with dist/*.whl python - <<'PY'
+          import importlib.metadata
+          import importlib.resources
+          import os
+
+          import applyaf
+
+          expected = os.environ["GITHUB_REF_NAME"].removeprefix("v")
+          installed = importlib.metadata.version("applyaf")
+          if installed != expected:
+              raise SystemExit(f"The wheel installed {installed}, expected {expected}")
+
+          for name in applyaf.__all__:
+              getattr(applyaf, name)
+
+          if not importlib.resources.files("applyaf").joinpath("py.typed").is_file():
+              raise SystemExit("The wheel is missing py.typed")
+
+          print(f"applyaf {installed} imported from {applyaf.__file__}")
+          PY
+
       - name: Publish to PyPI
         run: uv publish --trusted-publishing always

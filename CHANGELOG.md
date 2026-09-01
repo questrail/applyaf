@@ -4,6 +4,16 @@ This file contains all notable changes to the [applyaf][] project.
 
 ## Unreleased
 
+### Added
+
+- Smoke test the built wheel before publishing it. Every other check
+  runs against the source tree with `src/` on the path, so a packaging
+  mistake that left a module or `py.typed` out of the distribution
+  passed ruff, pyright, and the whole suite and shipped anyway. The new
+  step installs the wheel where `src/` cannot be reached, imports it
+  there, checks the installed version against the tag, resolves every
+  name in `__all__`, and confirms `py.typed` came along.
+
 ## v3.0.1 - 2026-08-31
 
 ### Added

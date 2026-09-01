@@ -103,10 +103,13 @@ would produce rather than leaving the choice to memory. Answering `q`, or
 anything unrecognized, changes nothing.
 
 The tag push runs the [release workflow][], which rechecks the tag against the
-version in `pyproject.toml`, repeats the checks, builds, and uploads. There is
-no PyPI API token anywhere: the workflow authenticates with [trusted
-publishing][], which mints a short lived credential from the GitHub OIDC
-identity of that run.
+version in `pyproject.toml`, repeats the checks, and builds. Every check to that
+point runs against the source tree, so the workflow then installs the wheel it
+just built somewhere `src/` is not on the path and imports it there, which is
+the only step that can catch a packaging mistake that left something out of the
+distribution. It uploads once that passes. There is no PyPI API token anywhere:
+the workflow authenticates with [trusted publishing][], which mints a short
+lived credential from the GitHub OIDC identity of that run.
 
 Pushing the tag is the point of no return, since PyPI never lets a version
 number be reused. Everything `just release` does is local and amendable until
