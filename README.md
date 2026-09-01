@@ -12,6 +12,26 @@ incident field. Any duplicate frequency entries in the antenna factors or cable
 losses data are removed before interpolating the frequencies to match those of
 the spectrum analyzer readings.
 
+## Installation
+
+You can install [applyaf][] either via the Python Package Index (PyPI) or from
+source.
+
+To add it to a project managed with [uv][], which records it in your
+`pyproject.toml` and lock file:
+
+```bash
+$ uv add applyaf
+```
+
+Or to install it with pip:
+
+```bash
+$ pip install applyaf
+```
+
+**Source:** https://github.com/questrail/applyaf
+
 ## Inputs
 
 Three csv files containing the following are required inputs:
