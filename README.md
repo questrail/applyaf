@@ -59,15 +59,22 @@ Contributions are welcome! To contribute please:
 #### Development Setup on macOS
 
 ```bash
-$ brew install uv ruff just
+$ brew install uv just
 ```
 
-With [uv][], [ruff][] and [Just][] installed, development has been simplified to
-simply running [Just][] to see the available commands.
+With [uv][] and [Just][] installed, development has been simplified to simply
+running [Just][] to see the available commands.
 
 ```bash
 $ just
 ```
+
+[ruff][] and [pyright][] are deliberately absent from that line. Both are dev
+dependencies pinned in `uv.lock` and reached through `uv run`, so every recipe
+and every CI job uses the same version. A `brew install ruff` would put a
+second, unpinned copy on the path for an editor to find, and ruff releases
+change how code is formatted: the editor would then reformat code that
+`ruff format --check` rejects on the next run.
 
 #### Releasing to PyPI
 
@@ -160,6 +167,7 @@ workflow, and the `pypi` environment. It is a one time setup per project.
 [pull request]: https://help.github.com/articles/using-pull-requests
 [pypi ver image]: https://img.shields.io/pypi/v/applyaf.svg
 [pypi ver link]: https://pypi.python.org/pypi/applyaf
+[pyright]: https://microsoft.github.io/pyright/
 [pyversions image]: https://img.shields.io/pypi/pyversions/applyaf.svg
 [release workflow]: https://github.com/questrail/applyaf/blob/master/.github/workflows/release.yml
 [releases]: https://github.com/questrail/applyaf/releases

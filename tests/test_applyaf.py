@@ -260,6 +260,17 @@ class TestReadingCSVFileEdgeCases:
         np.testing.assert_array_equal(data["amplitude_db"], np.array([0.20, 0.30]))
 
 
+class TestHeaderDetection:
+    def test_a_file_with_no_delimiter_falls_back_to_a_header(self):
+        # csv.Sniffer cannot find a delimiter in a single column file and
+        # raises rather than answering. The first row is not numeric, so a
+        # header is the better guess.
+        assert applyaf.applyaf._has_header("frequency\n100\n200\n") is True
+
+    def test_a_numeric_first_row_is_data_whatever_the_sniffer_says(self):
+        assert applyaf.applyaf._has_header("100,10.0\n200,11.0\n") is False
+
+
 class TestAbsentCableLosses:
     def test_absent_cable_losses_are_returned_as_zeros(
         self, analyzer_readings, antenna_factors
@@ -275,6 +286,23 @@ class TestAbsentCableLosses:
         np.testing.assert_array_equal(
             cable_losses_at_frequencies,
             np.zeros_like(antenna_factors_at_frequencies),
+        )
+
+    def test_removing_without_cable_losses_round_trips(
+        self, given_analyzer_readings, antenna_factors
+    ):
+        # remove_antenna_factor() has a branch of its own for the absent
+        # cable losses, and applying then removing has to land back on the
+        # readings it started from without one.
+        incident_field = applyaf.apply_antenna_factor(
+            given_analyzer_readings.copy(), antenna_factors
+        )
+        recovered = applyaf.remove_antenna_factor(incident_field, antenna_factors)
+        np.testing.assert_array_equal(
+            recovered["frequency"], given_analyzer_readings["frequency"]
+        )
+        np.testing.assert_array_almost_equal(
+            recovered["amplitude_db"], given_analyzer_readings["amplitude_db"]
         )
 
     def test_absent_cable_losses_match_explicit_zero_loss(
@@ -323,7 +351,7 @@ class TestOutOfRangeFrequencies:
         self, my_data_type, antenna_factors_290_to_400
     ):
         readings = np.array([(1e6, 10.0)], dtype=my_data_type)
-        with pytest.raises(ValueError) as excinfo:
+        with pytest.raises(ValueError, match="antenna factors") as excinfo:
             applyaf.apply_antenna_factor(readings, antenna_factors_290_to_400)
         message = str(excinfo.value)
         assert "2.9e+08 Hz to 4e+08 Hz" in message

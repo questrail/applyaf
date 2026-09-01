@@ -89,31 +89,14 @@ jobs:
         run: uv build
 
       # Every check so far runs against the source tree, so a packaging mistake
-      # that leaves something out of the wheel passes all of them. Install the
-      # wheel that is about to be uploaded into an environment that has no path
-      # to src/ and exercise it there instead.
+      # that leaves something out of the wheel passes all of them. The script
+      # installs the wheel that is about to be uploaded into an environment
+      # with no path to src/ and exercises it there. `just build` runs the same
+      # script, so the local build and this one check the same things.
       - name: Smoke test the built wheel
         run: |
-          uv run --no-project --with dist/*.whl python - <<'PY'
-          import importlib.metadata
-          import importlib.resources
-          import os
-
-          import applyaf
-
-          expected = os.environ["GITHUB_REF_NAME"].removeprefix("v")
-          installed = importlib.metadata.version("applyaf")
-          if installed != expected:
-              raise SystemExit(f"The wheel installed {installed}, expected {expected}")
-
-          for name in applyaf.__all__:
-              getattr(applyaf, name)
-
-          if not importlib.resources.files("applyaf").joinpath("py.typed").is_file():
-              raise SystemExit("The wheel is missing py.typed")
-
-          print(f"applyaf {installed} imported from {applyaf.__file__}")
-          PY
+          uv run --no-project --with dist/*.whl \
+            python scripts/smoke_test_wheel.py "${GITHUB_REF_NAME#v}"
 
       # Done before the upload, since a CHANGELOG that has no section for this
       # version should stop the release while stopping it is still possible.

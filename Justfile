@@ -66,7 +66,13 @@ lock:
 # Check, test, and build the distributions that CI will publish
 [group('deploy')]
 build: lint test
+  #!/usr/bin/env bash
+  set -euo pipefail
   uv build --clear
+  # The same check the release workflow runs before it uploads, so that a
+  # packaging mistake surfaces here rather than on a tag that cannot be undone.
+  uv run --no-project --with dist/*.whl \
+    python scripts/smoke_test_wheel.py "$(uv version --short)"
 
 # Cut a release
 [group('deploy')]

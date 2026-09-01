@@ -38,6 +38,39 @@ This file contains all notable changes to the [applyaf][] project.
 
 ### Changed
 
+- Run the wheel smoke test from `scripts/smoke_test_wheel.py`, which both
+  `just build` and the release workflow now call. It had lived as a
+  heredoc inside `release.yml`, so the README's claim that `just build`
+  runs the same checks was not quite true: the local build was the one
+  place a packaging mistake could slip through.
+- Set `UV_NO_SYNC` for `ci.yml`. Each job installs its environment once,
+  in the step that says so, and every `uv run` after it was re-resolving
+  and reinstalling the project on top of that. In the floor job that was
+  more than wasted time: a re-sync resolves at the default resolution and
+  would have undone the `lowest-direct` install the job exists to test.
+  The explicit `--no-sync` flags there are gone, since the variable now
+  says it once for the whole file.
+- Select the `PT` and `RUF` ruff rules. `PT` caught a
+  `pytest.raises(ValueError)` with no `match`, which any other `ValueError`
+  from that call would have satisfied. `C4`, `RET`, `ARG`, and `TID` were
+  tried and found nothing, so they are left out rather than added dormant.
+- Require 100% coverage with `fail_under`, which the suite now reaches.
+  Two branches had never been exercised: `remove_antenna_factor()` with
+  no cable losses, which is a public path a caller can take, and the
+  `csv.Error` fallback in `_has_header()` that a single column file
+  reaches. Both have tests now. Also set `relative_files`, since Coveralls
+  cannot map the absolute paths of a runner's checkout onto the
+  repository.
+- Track `.python-version` rather than ignoring it, so a contributor's
+  `uv sync` builds against the interpreter the release is built on
+  instead of whatever uv finds. The CI matrix is unaffected: setup-uv's
+  `python-version` input sets `UV_PYTHON`, which takes precedence over the
+  file.
+- Drop `ruff` from the `brew install` line in the README. It is a dev
+  dependency pinned in `uv.lock` and reached through `uv run`, so a brewed
+  copy only added a second, unpinned ruff for an editor to find, and
+  formatting changes between ruff releases: the editor could reformat code
+  that `ruff format --check` then rejected.
 - Gate the release on CI. `release.yml` now calls `ci.yml` as a reusable
   workflow and publishes only once the whole 3.12/3.13/3.14 matrix and
   the dependency floor job are green. It had rechecked only what it could

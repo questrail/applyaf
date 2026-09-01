@@ -51,6 +51,8 @@ select = [
   "SIM", # flake8-simplify
   "EXE", # flake8-executable
   "PL",  # pylint
+  "PT",  # flake8-pytest-style
+  "RUF", # ruff's own rules
 ]
 
 [tool.pytest.ini_options]
@@ -60,15 +62,22 @@ addopts = ["--strict-markers", "--strict-config"]
 [tool.coverage.run]
 source = ["applyaf"]
 branch = true
+# Coveralls maps the report onto the repository, and absolute paths from a
+# runner's checkout directory are not something it can map.
+relative_files = true
 
 [tool.coverage.report]
 show_missing = true
 exclude_lines = ["pragma: no cover", "if TYPE_CHECKING:"]
+# The suite covers every statement and branch. A floor set anywhere below that
+# would let coverage fall without anything noticing; set here, uncovered code
+# has to arrive with either a test or a deliberate edit to this line.
+fail_under = 100
 
 [tool.pyright]
 venvPath = "."
 venv = ".venv"
-include = ["src", "tests"]
+include = ["src", "tests", "scripts"]
 
 [dependency-groups]
 dev = [
