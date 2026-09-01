@@ -38,6 +38,24 @@ This file contains all notable changes to the [applyaf][] project.
 
 ### Changed
 
+- Upgrade `astral-sh/setup-uv` from v7.6.0 to v10.0.1, across three major
+  releases. v8 dropped the `manifest-file` format this project never used
+  and stopped publishing major and minor tags altogether, which is the same
+  supply chain reasoning the SHA pins here already follow. v9 changed the
+  `prune-cache` default to `false` to ease the load on PyPI; the caches
+  that grows are small enough here to take the new default as it comes.
+  v10 stops caching by default on the events where a poisoned cache does
+  the most damage.
+- Stop caching in the release job. `enable-cache` was `true`, which
+  overrode the protection v10 added: setup-uv's own `auto` mode declines to
+  cache on a tag push, which is exactly what triggers this workflow, and
+  this is the job that can mint a PyPI credential. It is set to `false`
+  rather than left on `auto` so the answer does not change if that
+  heuristic does. Little is lost, since the lint and test steps moved to
+  the CI job and nothing in the release syncs the dev environment any more.
+  `ci.yml` keeps its cache: those jobs install numpy and the dev tools four
+  times over, and none of them can publish anything.
+
 - Pin every GitHub action to a commit SHA rather than a tag, with the
   version it stood for in a comment beside it. A tag is mutable, and the
   release job can mint a PyPI credential, so a moved tag on

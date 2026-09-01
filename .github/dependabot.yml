@@ -13,7 +13,8 @@ updates:
     groups:
       # Minor and patch updates arrive as one pull request rather than one
       # per action. Majors are deliberately left out of the group, so that a
-      # change like setup-uv v7 to v10 is reviewed on its own.
+      # change like the setup-uv v7 to v10 upgrade gets read before it is
+      # merged.
       actions:
         update-types: ["minor", "patch"]
         patterns: ["*"]

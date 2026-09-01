@@ -74,9 +74,17 @@ jobs:
           fi
 
       - name: Install uv and Python
-        uses: astral-sh/setup-uv@37802adc94f370d6bfd71619e3f0bf239e1f3b78 # v7.6.0
+        uses: astral-sh/setup-uv@20cfd1bf945f4377ade1205e4dbc17946fc9a30d # v10.0.1
         with:
-          enable-cache: true
+          # Off, not `auto`, though auto would also decline to cache here:
+          # setup-uv stopped caching on tag pushes in v10 because a poisoned
+          # cache in a job like this one reaches further than in an ordinary
+          # build, and this job can mint a PyPI credential. Saying it outright
+          # keeps the answer from changing if that heuristic ever does. Little
+          # is lost: since the lint and test steps moved to the CI job, nothing
+          # here syncs the dev environment, and only the build backend and the
+          # wheel under test get downloaded.
+          enable-cache: false
           python-version: "3.13"
 
       # No `uv sync` precedes this. Reading the version needs no environment,
