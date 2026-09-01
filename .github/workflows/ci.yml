@@ -42,6 +42,13 @@ jobs:
     steps:
       - name: Check out the repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          # checkout otherwise writes the GITHUB_TOKEN into .git/config, where
+          # every later step, and every action those steps call, can read it.
+          # Nothing in this workflow talks to the remote over git, and the
+          # release workflow publishes on this one's verdict, so the fewer
+          # steps that can reach a credential the better.
+          persist-credentials: false
 
       - name: Install uv and Python ${{ matrix.python-version }}
         uses: astral-sh/setup-uv@20cfd1bf945f4377ade1205e4dbc17946fc9a30d # v10.0.1
@@ -81,6 +88,13 @@ jobs:
     steps:
       - name: Check out the repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          # checkout otherwise writes the GITHUB_TOKEN into .git/config, where
+          # every later step, and every action those steps call, can read it.
+          # Nothing in this workflow talks to the remote over git, and the
+          # release workflow publishes on this one's verdict, so the fewer
+          # steps that can reach a credential the better.
+          persist-credentials: false
 
       - name: Install uv and Python
         uses: astral-sh/setup-uv@20cfd1bf945f4377ade1205e4dbc17946fc9a30d # v10.0.1

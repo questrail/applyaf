@@ -57,6 +57,14 @@ jobs:
           # merge-base needs real history, and the default shallow checkout
           # has none.
           fetch-depth: 0
+          # Without this, checkout leaves the GITHUB_TOKEN in .git/config for
+          # every later step, and every action those steps call, to read. In
+          # this job that token carries contents: write and sits beside a step
+          # that mints a PyPI credential. Nothing here needs it: the tag check
+          # below only reads refs the fetch above already brought down, and
+          # `gh release create` authenticates through GH_TOKEN rather than
+          # through git.
+          persist-credentials: false
 
       # `just release` refuses to cut from anywhere but master, but that is a
       # local courtesy; this workflow trusts any v* tag that reaches it. A tag

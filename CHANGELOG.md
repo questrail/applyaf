@@ -17,6 +17,29 @@ This file contains all notable changes to the [applyaf][] project.
   dependency and both `requires-python` and the floor job make claims
   about it.
 
+### Changed
+
+- Stop persisting the GitHub credential in the checkouts. `actions/checkout`
+  writes the `GITHUB_TOKEN` into `.git/config` by default, where every
+  later step, and every action those steps call, can read it. In the
+  release job that token carries `contents: write` and sits beside the
+  step that mints a PyPI credential. No step in either workflow talks to
+  the remote over git: the tag check reads refs the checkout already
+  fetched, and `gh release create` authenticates through `GH_TOKEN`.
+
+### Added
+
+- Put the Python dependencies under Dependabot. The actions in `ci.yml`
+  and `release.yml` had been pinned to commit SHAs and updated monthly
+  since they were pinned, while numpy and the dev tools sat in `uv.lock`
+  with nothing moving them at all: `just up-all` was a manual act of
+  memory. Dependabot's uv ecosystem reads `pyproject.toml` and `uv.lock`
+  together, so an update arrives as a lock file change that CI checks
+  with `uv sync --locked`. The dev tools are grouped into one pull
+  request; numpy is left out of the group, since it is the one runtime
+  dependency and both `requires-python` and the floor job make claims
+  about it.
+
 ## v3.0.2 - 2026-09-01
 
 ### Added
