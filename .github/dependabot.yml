@@ -18,3 +18,24 @@ updates:
       actions:
         update-types: ["minor", "patch"]
         patterns: ["*"]
+
+  # numpy and the dev tools are pinned in uv.lock, and until now nothing moved
+  # them: `just up-all` is a manual act of memory, so the actions above were
+  # the only thing in the repository under automation. Dependabot's uv
+  # ecosystem reads pyproject.toml and uv.lock together, so an update arrives
+  # as a lock file change that CI checks with `uv sync --locked` rather than as
+  # a resolution done on the runner.
+  - package-ecosystem: uv
+    directory: /
+    schedule:
+      interval: monthly
+    groups:
+      # The dev tools only ever run here, so their updates are read as one
+      # pull request. numpy is deliberately outside the group: it is the one
+      # runtime dependency, and both `requires-python` and the floor job in
+      # ci.yml make claims about it, so it gets read on its own. The patterns
+      # are listed rather than matched on dependency type, which the uv
+      # ecosystem is newer than; a dev tool added without a pattern here still
+      # gets updated, just in a pull request of its own.
+      dev-tools:
+        patterns: ["pyright", "pytest", "pytest-*", "ruff"]
