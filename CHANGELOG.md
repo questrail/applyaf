@@ -81,6 +81,19 @@ This file contains all notable changes to the [applyaf][] project.
   in `pyproject.toml` is untouched: it populates `Author-email` for the
   PyPI contact rather than standing as a copyright record.
 
+### Fixed
+
+- `just build` ran the wheel smoke test with `uv run --no-project`, which
+  is not enough on its own: uv layers the `--with` packages over the
+  project's own `.venv` when it finds one, so the wheel was imported
+  beside every dependency this project has installed. The wheel's own
+  modules still won the import, so the check has been passing honestly,
+  but a distribution that failed to declare a dependency would have found
+  it there anyway and said nothing. `--isolated` makes that environment a
+  clean one. A runner has no `.venv`, so `release.yml` was already getting
+  the isolation the local run was not; it carries the flag too, so that
+  the two really do run the same command.
+
 ## v3.0.2 - 2026-09-01
 
 ### Added

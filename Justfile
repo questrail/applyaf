@@ -72,7 +72,13 @@ build: lint test
   uv build --clear
   # The same check the release workflow runs before it uploads, so that a
   # packaging mistake surfaces here rather than on a tag that cannot be undone.
-  uv run --no-project --with dist/*.whl \
+  #
+  # --isolated is what makes the environment the wheel lands in a clean one.
+  # Without it uv layers the --with packages over the project's own .venv,
+  # where every dependency is already installed, and a distribution that
+  # failed to declare one would still import here. A runner has no .venv, so
+  # only the local run needs it.
+  uv run --isolated --no-project --with dist/*.whl \
     python scripts/smoke_test_wheel.py "$(uv version --short)"
 
 # Cut a release
