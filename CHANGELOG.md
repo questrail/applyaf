@@ -38,6 +38,13 @@ This file contains all notable changes to the [applyaf][] project.
 
 ### Changed
 
+- Give the dependency floor job its own `cache-suffix`. It runs on 3.12,
+  as does a leg of the matrix, which put both on the same default cache key
+  on the same runner: they raced to save it and every CI run carried a
+  "Failed to save: Unable to reserve cache" warning. The two install
+  deliberately different numpy versions, so they want separate keys rather
+  than one they take turns overwriting.
+
 - Upgrade `astral-sh/setup-uv` from v7.6.0 to v10.0.1, across three major
   releases. v8 dropped the `manifest-file` format this project never used
   and stopped publishing major and minor tags altogether, which is the same

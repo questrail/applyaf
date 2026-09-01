@@ -91,6 +91,13 @@ jobs:
           # numpy>=2.2.0 floor on 3.14 would compile it from source. Check it
           # on the oldest interpreter the project supports instead.
           python-version: "3.12"
+          # Which puts this job on the same runner, interpreter, and default
+          # cache key as the 3.12 leg of the matrix, so the two raced to save
+          # one cache and every run carried a "Failed to save: Unable to
+          # reserve cache" warning. They install deliberately different numpy
+          # versions, so they want separate keys rather than one they take
+          # turns overwriting.
+          cache-suffix: lowest-direct
 
       # The version floors in pyproject.toml are a promise to anyone installing
       # applyaf alongside something else that holds numpy back, and the test
