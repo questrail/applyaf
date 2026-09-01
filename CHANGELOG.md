@@ -20,9 +20,20 @@ This file contains all notable changes to the [applyaf][] project.
   step installs the wheel where `src/` cannot be reached, imports it
   there, checks the installed version against the tag, resolves every
   name in `__all__`, and confirms `py.typed` came along.
+- Test on Python 3.14 in CI and declare it in the classifiers. The code
+  and the type checking were already clean on 3.14; what was missing was
+  anything that would notice if they stopped being clean, since
+  `requires-python = ">=3.12"` had let 3.14 install all along without a
+  matrix entry standing behind it.
 
 ### Changed
 
+- Upgrade numpy in the lock file from 2.2.0 to 2.5.2. 2.2.0 predates
+  Python 3.14 and ships no cp314 wheels, so a 3.14 job would have had to
+  compile numpy from source on every run; cp314 wheels start at numpy
+  2.3.2. The `numpy>=2.2.0` floor in `pyproject.toml` is unchanged, since
+  a resolver installing on 3.14 picks the newest compatible numpy anyway
+  and only the lock had pinned the old one.
 - Check the release preconditions in `just release` before linting and
   testing rather than after. `release` had depended on `lint` and
   `test`, so a dirty tree, the wrong branch, or an empty Unreleased
