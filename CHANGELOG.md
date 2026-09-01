@@ -42,6 +42,17 @@ This file contains all notable changes to the [applyaf][] project.
   also holds a `.publish.attestation` beside each distribution. PyPI
   serves those next to the files they attest, so a second copy on the
   release would be noise with nothing to read it.
+- Remove `AUTHORS.md` and the copyright notice's reference to it. The
+  notice in `LICENSE.txt` read "The applyaf developers (see AUTHORS.md
+  file)", and `AUTHORS.md` is not in the wheel: `license-files` carries
+  `LICENSE.txt` into `dist-info/licenses/` and nothing carries the other,
+  so every installed copy pointed at a file that was not there. A license
+  travels into vendored trees and distro packages without the repository
+  around it, so the notice has to stand on its own. It now names the same
+  holder the source file headers have always named, and the file it used
+  to defer to, which listed one person twice, is gone. `[project.authors]`
+  in `pyproject.toml` is untouched: it populates `Author-email` for the
+  PyPI contact rather than standing as a copyright record.
 
 ## v3.0.2 - 2026-09-01
 
