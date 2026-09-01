@@ -130,6 +130,15 @@ This file contains all notable changes to the [applyaf][] project.
 
 ### Changed
 
+- Stop the workflow audit job racing the matrix for one cache key. It pins
+  3.13 and installs the same locked environment a leg of the matrix does,
+  on the same runner, so `setup-uv` computed one cache key for both and the
+  two reached for it at once: one saves and the other reports that it could
+  not. It now restores the cache without saving it. The floor job below
+  answers the same race with a `cache-suffix`, but that job installs
+  deliberately different versions and so wants an entry of its own, while
+  this one would only be storing a second copy of an identical environment.
+
 - Give the dependency floor job its own `cache-suffix`. It runs on 3.12,
   as does a leg of the matrix, which put both on the same default cache key
   on the same runner: they raced to save it and every CI run carried a
