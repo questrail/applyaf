@@ -71,11 +71,11 @@ $ just
 
 #### Releasing to PyPI
 
-`just release` cuts the release. It lints, type checks, and tests, then shows
-the entries waiting under Unreleased and the version each kind of bump would
-produce, and asks which to cut. Once answered it bumps the version, closes out
-the CHANGELOG, updates the lock file, commits, and tags. Pushing the tag is
-what publishes.
+`just release` cuts the release. It first checks that a release is possible at
+all, then lints, type checks, and tests, then shows the entries waiting under
+Unreleased and the version each kind of bump would produce, and asks which to
+cut. Once answered it bumps the version, closes out the CHANGELOG, updates the
+lock file, commits, and tags. Pushing the tag is what publishes.
 
 ```bash
 $ just release
@@ -121,8 +121,10 @@ Pushing the tag is the point of no return, since PyPI never lets a version
 number be reused. Everything `just release` does is local and amendable until
 then, and it refuses to start against a dirty working tree, off `master`, on a
 `master` behind its upstream, with a CHANGELOG whose Unreleased section is
-empty, or when the tag it would create already exists. A refusal leaves the
-version and the CHANGELOG untouched.
+empty, or when the tag it would create already exists. Those refusals come
+before the lint and test run, so a release that cannot happen is turned away at
+once rather than after the suite. A refusal leaves the version and the CHANGELOG
+untouched.
 
 `just build` runs the same checks and produces the same distributions without
 releasing anything, which is the way to inspect what CI would upload.

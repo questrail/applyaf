@@ -70,7 +70,7 @@ build: lint test
 
 # Cut a release
 [group('deploy')]
-release: lint test
+release:
   #!/usr/bin/env bash
   set -euo pipefail
   if [ -n "$(git status --porcelain)" ]; then
@@ -98,6 +98,11 @@ release: lint test
   if [ -z "$unreleased" ]; then
     echo "CHANGELOG.md has no entries under Unreleased" >&2; exit 1
   fi
+  # The checks come after the refusals, so that a dirty tree or an empty
+  # Unreleased section is turned away immediately instead of after a full
+  # lint and test run.
+  {{just_executable()}} lint
+  {{just_executable()}} test
   current="$(uv version --short)"
   echo
   echo "Releasing from ${current}, with these entries under Unreleased:"

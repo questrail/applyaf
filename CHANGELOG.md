@@ -21,6 +21,13 @@ This file contains all notable changes to the [applyaf][] project.
   there, checks the installed version against the tag, resolves every
   name in `__all__`, and confirms `py.typed` came along.
 
+### Changed
+
+- Check the release preconditions in `just release` before linting and
+  testing rather than after. `release` had depended on `lint` and
+  `test`, so a dirty tree, the wrong branch, or an empty Unreleased
+  section was only reported once the full suite had run.
+
 ## v3.0.1 - 2026-08-31
 
 ### Added
