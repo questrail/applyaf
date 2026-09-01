@@ -31,6 +31,10 @@ This file contains all notable changes to the [applyaf][] project.
   the repository default of write while only reading the code it checks.
   `release.yml` asks for the `contents: write` that creating a release
   needs, alongside the `id-token: write` that trusted publishing needs.
+- List `369937+matthewrankin@users.noreply.github.com` as the author
+  address in `pyproject.toml`, replacing a work address. It is what
+  `Author-email` carries in the built metadata and what PyPI shows on the
+  project page, so it changes there from the next release onward.
 
 ## v3.0.1 - 2026-08-31
 
