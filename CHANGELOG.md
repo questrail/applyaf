@@ -27,6 +27,10 @@ This file contains all notable changes to the [applyaf][] project.
   testing rather than after. `release` had depended on `lint` and
   `test`, so a dirty tree, the wrong branch, or an empty Unreleased
   section was only reported once the full suite had run.
+- Ask for no more than `contents: read` in `ci.yml`, which had inherited
+  the repository default of write while only reading the code it checks.
+  `release.yml` asks for the `contents: write` that creating a release
+  needs, alongside the `id-token: write` that trusted publishing needs.
 
 ## v3.0.1 - 2026-08-31
 
