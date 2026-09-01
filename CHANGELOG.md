@@ -6,6 +6,14 @@ This file contains all notable changes to the [applyaf][] project.
 
 ### Added
 
+- Cap the CI jobs at ten minutes. They finish in under twenty seconds and
+  the GitHub default is six hours. Actions is free on a public repository
+  using standard runners, so a hang costs nothing to run; what it costs is
+  a release. `release.yml` waits on this workflow, and a tag starts it
+  under a concurrency group no later push ever touches: on `master` a
+  stalled job is cancelled by the next push, since `cancel-in-progress` is
+  true, but on a tag nothing arrives to cancel it, and the publish would
+  sit behind it for the full six hours. The release job already had a cap.
 - Sign a [PEP 740][] attestation for each distribution and upload it
   alongside the file it attests. `uv publish` uploads attestations but
   does not create them, so every release before this one went out

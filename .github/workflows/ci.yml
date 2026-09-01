@@ -34,6 +34,14 @@ jobs:
   test:
     name: Python ${{ matrix.python-version }}
     runs-on: ubuntu-latest
+    # These jobs finish in under twenty seconds; the GitHub default is six
+    # hours. Actions is free on a public repository using standard runners, so
+    # a hang costs nothing to run. What it costs is a release. release.yml
+    # waits on this workflow, and a tag starts it under a concurrency group no
+    # later push ever touches: on master a stalled job is cancelled by the next
+    # push, since cancel-in-progress is true, but on a tag nothing arrives to
+    # cancel it, and the publish sits behind it for the full six hours.
+    timeout-minutes: 10
     strategy:
       fail-fast: false
       matrix:
@@ -84,6 +92,7 @@ jobs:
   floor:
     name: Lowest supported dependencies
     runs-on: ubuntu-latest
+    timeout-minutes: 10
 
     steps:
       - name: Check out the repository
