@@ -296,6 +296,24 @@ class TestReadingCSVFileEdgeCases:
         np.testing.assert_array_equal(data["frequency"], np.array([100e6, 200e6]))
         np.testing.assert_array_equal(data["amplitude_db"], np.array([0.20, 0.30]))
 
+    def test_a_file_of_nothing_but_blank_lines_reads_as_empty(self, write_csv):
+        # Skipping the leading blank lines runs off the end of a file that has
+        # nothing else in it, and the read still has to land on the structured
+        # dtype rather than raising.
+        filename = write_csv("blank_only.csv", "\n\n   \n")
+        with pytest.warns(UserWarning, match="input contained no data"):
+            data = applyaf.read_csv_file(filename, 1.0e6)
+        assert data.ndim == 1
+        assert data.size == 0
+        assert data.dtype.names == ("frequency", "amplitude_db")
+
+    def test_an_empty_file_reads_as_empty(self, write_csv):
+        filename = write_csv("empty.csv", "")
+        with pytest.warns(UserWarning, match="input contained no data"):
+            data = applyaf.read_csv_file(filename, 1.0e6)
+        assert data.ndim == 1
+        assert data.size == 0
+
     def test_a_blank_line_ahead_of_a_single_data_row_is_ignored(self, write_csv):
         # Header detection now reads its sample from the first line that holds
         # something rather than from the blank one, so the lone numeric row it

@@ -95,6 +95,11 @@ This file contains all notable changes to the [applyaf][] project.
   blank lines before either the header sniffing or the read, so the skip
   lands on the header itself. A file that is empty or blank throughout
   still reads as an empty array.
+- `just build` ran the bare test suite, while CI runs pytest under
+  coverage and fails below 100%. The gate that decides whether a push is
+  accepted was one the recipe meant to pre-empt it never applied, and an
+  uncovered line reached CI to find that out. `build` depends on `cov`
+  now. `just test` is untouched and stays the fast one to iterate with.
 - `just build` ran the wheel smoke test with `uv run --no-project`, which
   is not enough on its own: uv layers the `--with` packages over the
   project's own `.venv` when it finds one, so the wheel was imported

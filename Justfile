@@ -65,8 +65,12 @@ lock:
   uv lock
 
 # Check, test, and build the distributions that CI will publish
+#
+# Depends on cov rather than on test because CI runs pytest under coverage
+# and fails under 100%. Running the bare suite here meant the gate that
+# gets a push rejected was one this recipe never applied.
 [group('deploy')]
-build: lint test
+build: lint cov
   #!/usr/bin/env bash
   set -euo pipefail
   uv build --clear
