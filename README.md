@@ -123,10 +123,13 @@ installs the wheel it just built somewhere `src/` is not on the path and imports
 it there, which is the only step that can catch a packaging mistake that left
 something out of the distribution. It uploads once that passes. There is no PyPI
 API token anywhere: the workflow authenticates with [trusted publishing][], which
-mints a short lived credential from the GitHub OIDC identity of that run. The
-upload names a `--check-url`, so a run that uploaded one distribution and then
-failed on the other can be retried instead of stranding a version number that
-PyPI will never allow to be reused.
+mints a short lived credential from the GitHub OIDC identity of that run. That
+same identity signs a [PEP 740][] attestation for each distribution, which PyPI
+serves beside the file it attests: trusted publishing establishes who uploaded,
+and the attestation establishes what was uploaded and which workflow built it.
+The upload skips anything PyPI already holds, so a run that uploaded one
+distribution and then failed on the other can be retried instead of stranding a
+version number that PyPI will never allow to be reused.
 
 Uploading is followed by a [GitHub release][releases] for the tag, carrying the
 CHANGELOG section for that version as its notes and the built distributions as
@@ -167,6 +170,7 @@ workflow, and the `pypi` environment. It is a one time setup per project.
 [pull request]: https://help.github.com/articles/using-pull-requests
 [pypi ver image]: https://img.shields.io/pypi/v/applyaf.svg
 [pypi ver link]: https://pypi.python.org/pypi/applyaf
+[PEP 740]: https://peps.python.org/pep-0740/
 [pyright]: https://microsoft.github.io/pyright/
 [pyversions image]: https://img.shields.io/pypi/pyversions/applyaf.svg
 [release workflow]: https://github.com/questrail/applyaf/blob/master/.github/workflows/release.yml

@@ -153,17 +153,29 @@ jobs:
           print("\n\n".join([notes, *(["\n".join(definitions)] if definitions else [])]))
           PY
 
-      # --check-url makes the upload resumable. Without it, a run that uploaded
-      # the sdist and then lost the wheel could not be retried: the second
-      # attempt fails on the file PyPI already has, and a version number can
-      # never be reused. With it, the files already up are skipped and the rest
-      # goes out.
+      # `uv publish` uploads attestations but does not create them, so every
+      # release before this one went out unattested: trusted publishing proved
+      # who uploaded, and nothing stood behind what was uploaded or where it
+      # was built. This action signs a PEP 740 attestation for each
+      # distribution against the same OIDC identity and uploads the two
+      # together, which is on by default under trusted publishing and is the
+      # whole reason it stands here in place of `uv publish`.
+      #
+      # skip-existing replaces the `--check-url` the uv invocation carried, and
+      # is here for the same reason: a run that uploaded the sdist and then
+      # lost the wheel could not otherwise be retried, since the second attempt
+      # fails on the file PyPI already has and a version number can never be
+      # reused. Upstream suggests reserving it for TestPyPI, but a retry that
+      # would otherwise strand a version number is the case it exists for.
       - name: Publish to PyPI
-        run: |
-          uv publish \
-            --trusted-publishing always \
-            --check-url https://pypi.org/simple/applyaf/
+        uses: pypa/gh-action-pypi-publish@dc37677b2e1c63e2034f94d8a5b11f265b73ba33 # v1.14.2
+        with:
+          skip-existing: true
 
+      # The assets are named rather than globbed as dist/*, which the step
+      # above has now joined with a .publish.attestation beside each
+      # distribution. PyPI serves those next to the files they attest, so a
+      # second copy here would be noise with nothing to read it.
       - name: Create the GitHub release
         env:
           GH_TOKEN: ${{ github.token }}
@@ -172,4 +184,4 @@ jobs:
             --title "$GITHUB_REF_NAME" \
             --notes-file "${RUNNER_TEMP}/release-notes.md" \
             --verify-tag \
-            dist/*
+            dist/*.tar.gz dist/*.whl

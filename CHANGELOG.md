@@ -6,6 +6,18 @@ This file contains all notable changes to the [applyaf][] project.
 
 ### Added
 
+- Sign a [PEP 740][] attestation for each distribution and upload it
+  alongside the file it attests. `uv publish` uploads attestations but
+  does not create them, so every release before this one went out
+  unattested: trusted publishing established who uploaded, and nothing
+  stood behind what was uploaded or which workflow built it. The publish
+  step is now `pypa/gh-action-pypi-publish`, which signs against the same
+  OIDC identity the upload already used and does so by default under
+  trusted publishing. Its `skip-existing` replaces the `--check-url` the
+  uv invocation carried, for the same reason: a run that uploaded the
+  sdist and then lost the wheel could not otherwise be retried, since the
+  second attempt fails on the file PyPI already has and a version number
+  can never be reused.
 - Put the Python dependencies under Dependabot. The actions in `ci.yml`
   and `release.yml` had been pinned to commit SHAs and updated monthly
   since they were pinned, while numpy and the dev tools sat in `uv.lock`
@@ -26,19 +38,10 @@ This file contains all notable changes to the [applyaf][] project.
   step that mints a PyPI credential. No step in either workflow talks to
   the remote over git: the tag check reads refs the checkout already
   fetched, and `gh release create` authenticates through `GH_TOKEN`.
-
-### Added
-
-- Put the Python dependencies under Dependabot. The actions in `ci.yml`
-  and `release.yml` had been pinned to commit SHAs and updated monthly
-  since they were pinned, while numpy and the dev tools sat in `uv.lock`
-  with nothing moving them at all: `just up-all` was a manual act of
-  memory. Dependabot's uv ecosystem reads `pyproject.toml` and `uv.lock`
-  together, so an update arrives as a lock file change that CI checks
-  with `uv sync --locked`. The dev tools are grouped into one pull
-  request; numpy is left out of the group, since it is the one runtime
-  dependency and both `requires-python` and the floor job make claims
-  about it.
+- Name the GitHub release assets rather than globbing `dist/*`, which now
+  also holds a `.publish.attestation` beside each distribution. PyPI
+  serves those next to the files they attest, so a second copy on the
+  release would be noise with nothing to read it.
 
 ## v3.0.2 - 2026-09-01
 
@@ -448,3 +451,4 @@ This file contains all notable changes to the [applyaf][] project.
 [#1]: https://github.com/questrail/applyaf/issues/1
 [#2]: https://github.com/questrail/applyaf/issues/2
 [applyaf]: https://github.com/questrail/applyaf
+[PEP 740]: https://peps.python.org/pep-0740/
