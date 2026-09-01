@@ -38,4 +38,4 @@ updates:
       # ecosystem is newer than; a dev tool added without a pattern here still
       # gets updated, just in a pull request of its own.
       dev-tools:
-        patterns: ["pyright", "pytest", "pytest-*", "ruff"]
+        patterns: ["pyright", "pytest", "pytest-*", "ruff", "zizmor"]

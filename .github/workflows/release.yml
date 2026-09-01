@@ -28,9 +28,18 @@ jobs:
   # while `git push --follow-tags` started this workflow and CI at the same
   # time: nothing stopped an upload that went out while 3.14 was still running,
   # or already red.
+  #
+  # `$/` rather than `./`, which is what GitHub now recommends for a workflow
+  # in the same repository. `./` resolves against the runner's filesystem, so
+  # in the general case a step that had already cloned something could stand in
+  # front of the file being called; `$/` resolves against the repository at
+  # this commit and counts as a pinned reference under GitHub's own policy.
+  # Nothing here can exploit the difference, since a job level `uses` is read
+  # before any step of that job runs, but this workflow publishes on this call's
+  # verdict, so it is worth pinning for the same reason the actions are.
   ci:
     name: CI
-    uses: ./.github/workflows/ci.yml
+    uses: $/.github/workflows/ci.yml
     permissions:
       contents: read
 

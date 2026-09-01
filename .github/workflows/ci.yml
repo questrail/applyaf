@@ -142,3 +142,37 @@ jobs:
       # resolution would report on the tooling rather than on the floor.
       - name: Test
         run: uv run pytest
+
+  workflows:
+    name: Workflows
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Install uv and Python
+        uses: astral-sh/setup-uv@20cfd1bf945f4377ade1205e4dbc17946fc9a30d # v10.0.1
+        with:
+          enable-cache: true
+          python-version: "3.13"
+
+      - name: Install the project and its dependencies
+        run: uv sync --locked
+
+      # Everything under src/ is linted on every push. The workflows, which
+      # are the part of this repository that can mint a PyPI credential, were
+      # read by eye alone. zizmor is what found the GITHUB_TOKEN that the
+      # checkouts used to leave in .git/config for every later step, and it is
+      # here so that the next finding of that kind does not depend on someone
+      # noticing it.
+      #
+      # A job of its own rather than a step gated on one leg of the matrix the
+      # way the Coveralls step is: that gate would mean dropping 3.13 from the
+      # matrix silently stops auditing the workflows, and a security check
+      # that leaves quietly is worse than one that was never added.
+      - name: Audit the workflows
+        run: uv run zizmor .github/workflows

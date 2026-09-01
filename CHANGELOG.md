@@ -6,6 +6,16 @@ This file contains all notable changes to the [applyaf][] project.
 
 ### Added
 
+- Audit the workflows with [zizmor][] in CI and in `just lint`. Everything
+  under `src/` was linted on every push while the workflows, the part of
+  this repository that can mint a PyPI credential, were read by eye alone.
+  zizmor is what found the `GITHUB_TOKEN` the checkouts had been leaving in
+  `.git/config`, and it runs now so that the next finding of that kind does
+  not depend on someone noticing it. It is a dev dependency pinned in
+  `uv.lock` and reached through `uv run`, like ruff and pyright, so the
+  recipe and the CI job audit with the same version. It runs as a job of
+  its own rather than as a step gated on one leg of the matrix: that gate
+  would mean dropping a Python version silently stops the audit.
 - Cap the CI jobs at ten minutes. They finish in under twenty seconds and
   the GitHub default is six hours. Actions is free on a public repository
   using standard runners, so a hang costs nothing to run; what it costs is
@@ -46,6 +56,15 @@ This file contains all notable changes to the [applyaf][] project.
   step that mints a PyPI credential. No step in either workflow talks to
   the remote over git: the tag check reads refs the checkout already
   fetched, and `gh release create` authenticates through `GH_TOKEN`.
+- Call the CI workflow from the release workflow as `$/`, which is the
+  syntax GitHub now recommends for a workflow in the same repository. `./`
+  resolves against the runner's filesystem, so in the general case a step
+  that had already cloned something could stand in front of the file being
+  called; `$/` resolves against the repository at that commit and counts as
+  a pinned reference under GitHub's own policy. Nothing here could exploit
+  the difference, since a job level `uses` is read before any step of that
+  job runs, but the release publishes on that call's verdict, so it is
+  worth pinning for the same reason the actions are.
 - Name the GitHub release assets rather than globbing `dist/*`, which now
   also holds a `.publish.attestation` beside each distribution. PyPI
   serves those next to the files they attest, so a second copy on the
@@ -470,4 +489,5 @@ This file contains all notable changes to the [applyaf][] project.
 [#1]: https://github.com/questrail/applyaf/issues/1
 [#2]: https://github.com/questrail/applyaf/issues/2
 [applyaf]: https://github.com/questrail/applyaf
+[zizmor]: https://docs.zizmor.sh/
 [PEP 740]: https://peps.python.org/pep-0740/
