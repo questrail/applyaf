@@ -83,6 +83,18 @@ This file contains all notable changes to the [applyaf][] project.
 
 ### Fixed
 
+- Ignore blank lines at the start of a CSV file, which resolves [#1][].
+  `read_csv_file()` promised that blank lines are ignored, and they were
+  everywhere except ahead of a header row: `np.loadtxt()` skips blank
+  lines on its own but counts physical lines when it honors `skiprows`,
+  so the blank line consumed the skip and the header row was handed to
+  the parser as data, raising `could not convert string 'Frequency (MHz)'
+  to float64`. Passing `header=True` explicitly failed the same way,
+  which was the worse half: the caller stated the truth about the file
+  and still got a crash. The handle is now advanced past the leading
+  blank lines before either the header sniffing or the read, so the skip
+  lands on the header itself. A file that is empty or blank throughout
+  still reads as an empty array.
 - `just build` ran the wheel smoke test with `uv run --no-project`, which
   is not enough on its own: uv layers the `--with` packages over the
   project's own `.venv` when it finds one, so the wheel was imported

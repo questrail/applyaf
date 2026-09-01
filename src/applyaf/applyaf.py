@@ -12,10 +12,34 @@ data.
 
 # Standard module imports
 import csv
+from typing import TextIO
 
 # Data analysis related imports
 import numpy as np
 import numpy.typing as npt
+
+
+def _skip_leading_blank_lines(f: TextIO) -> None:
+    """Advance a file handle past any blank lines at the start of the file.
+
+    np.loadtxt() ignores blank lines but counts physical lines when it honors
+    skiprows, so a blank line ahead of a header row consumes the skip and
+    leaves the header itself to be parsed as data. Positioning the handle on
+    the first line that holds something makes the skip land on the header.
+
+    Args:
+        f: A text file handle positioned at the start of the file. Left on
+            the first non-blank line, or at end of file if there is none.
+    """
+    while True:
+        position = f.tell()
+        line = f.readline()
+        if not line:
+            # End of the file, so there is no non-blank line to stop on.
+            break
+        if line.strip():
+            f.seek(position)
+            break
 
 
 def _has_header(sample: str) -> bool:
@@ -57,7 +81,8 @@ def read_csv_file(
 ) -> npt.NDArray:
     """Read csv file into a numpy array
 
-    Blank lines in the CSV file are ignored.
+    Blank lines in the CSV file are ignored, wherever they fall, including
+    ahead of a header row.
 
     Args:
         filename: Path to a two column CSV file of frequency and amplitude.
@@ -71,11 +96,14 @@ def read_csv_file(
         'amplitude_db'.
     """
     with open(filename) as f:
+        _skip_leading_blank_lines(f)
+        start_of_data = f.tell()
         if header is None:
             header = _has_header(f.read(1024))
         rows_to_skip = 1 if header else 0
-        # Go back to the file's beginning and read it into np.array
-        f.seek(0)
+        # Go back to the first non-blank line and read from there into
+        # np.array.
+        f.seek(start_of_data)
         array_to_return = np.loadtxt(
             f,
             dtype={

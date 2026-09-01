@@ -259,6 +259,53 @@ class TestReadingCSVFileEdgeCases:
         np.testing.assert_array_equal(data["frequency"], np.array([100e6, 200e6]))
         np.testing.assert_array_equal(data["amplitude_db"], np.array([0.20, 0.30]))
 
+    def test_a_blank_line_ahead_of_the_header_is_ignored(self, write_csv):
+        # np.loadtxt ignores blank lines but counts physical lines when it
+        # honors skiprows, so the blank line used to consume the skip and the
+        # header row was handed to the parser as data.
+        filename = write_csv(
+            "leading_blank_line.csv",
+            "\nFrequency (MHz),Attenuation (dB)\n100,0.20\n200,0.30\n",
+        )
+        data = applyaf.read_csv_file(filename, 1.0e6)
+        np.testing.assert_array_equal(data["frequency"], np.array([100e6, 200e6]))
+        np.testing.assert_array_equal(data["amplitude_db"], np.array([0.20, 0.30]))
+
+    def test_several_blank_lines_ahead_of_the_header_are_ignored(self, write_csv):
+        filename = write_csv(
+            "leading_blank_lines.csv",
+            "\n\n   \nFrequency (MHz),Attenuation (dB)\n100,0.20\n200,0.30\n",
+        )
+        data = applyaf.read_csv_file(filename, 1.0e6)
+        np.testing.assert_array_equal(data["frequency"], np.array([100e6, 200e6]))
+
+    def test_a_blank_line_ahead_of_a_declared_header_is_ignored(self, write_csv):
+        # The caller stating header=True is the case that has to hold: the
+        # skip belongs to the header row, not to whatever blank line precedes
+        # it.
+        filename = write_csv(
+            "leading_blank_declared_header.csv",
+            "\nFrequency (MHz),Attenuation (dB)\n100,0.20\n200,0.30\n",
+        )
+        data = applyaf.read_csv_file(filename, 1.0e6, header=True)
+        np.testing.assert_array_equal(data["frequency"], np.array([100e6, 200e6]))
+
+    def test_a_blank_line_ahead_of_headerless_data_is_ignored(self, write_csv):
+        filename = write_csv("leading_blank_no_header.csv", "\n100,0.20\n200,0.30\n")
+        data = applyaf.read_csv_file(filename, 1.0e6)
+        np.testing.assert_array_equal(data["frequency"], np.array([100e6, 200e6]))
+        np.testing.assert_array_equal(data["amplitude_db"], np.array([0.20, 0.30]))
+
+    def test_a_blank_line_ahead_of_a_single_data_row_is_ignored(self, write_csv):
+        # Header detection now reads its sample from the first line that holds
+        # something rather than from the blank one, so the lone numeric row it
+        # sees has to be recognized as data and not skipped as a header.
+        filename = write_csv("leading_blank_one_row.csv", "\n100,0.20\n")
+        data = applyaf.read_csv_file(filename, 1.0e6)
+        assert data.ndim == 1
+        assert data.size == 1
+        np.testing.assert_array_equal(data["frequency"], np.array([100e6]))
+
 
 class TestHeaderDetection:
     def test_a_file_with_no_delimiter_falls_back_to_a_header(self):
