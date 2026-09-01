@@ -15,6 +15,13 @@ concurrency:
 permissions:
   contents: read
 
+# Every action below is pinned to a commit SHA rather than to a tag, because a
+# tag is mutable and this job can mint a PyPI credential. The version each SHA
+# stood for when it was pinned is in the comment beside it, and dependabot.yml
+# is what moves them; a pin with nothing updating it is a decision to stay on
+# one commit forever. ci.yml is pinned on the same terms: it is not privileged
+# itself, but this workflow now publishes on its verdict, so an action that
+# could turn a red run green sits inside the same boundary.
 jobs:
   # Publishing waits on the whole matrix and on the dependency floor job. The
   # release used to recheck only what it could reach itself, on 3.13 alone,
@@ -45,7 +52,7 @@ jobs:
 
     steps:
       - name: Check out the repository
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           # merge-base needs real history, and the default shallow checkout
           # has none.
@@ -67,7 +74,7 @@ jobs:
           fi
 
       - name: Install uv and Python
-        uses: astral-sh/setup-uv@v7
+        uses: astral-sh/setup-uv@37802adc94f370d6bfd71619e3f0bf239e1f3b78 # v7.6.0
         with:
           enable-cache: true
           python-version: "3.13"

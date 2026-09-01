@@ -38,6 +38,20 @@ This file contains all notable changes to the [applyaf][] project.
 
 ### Changed
 
+- Pin every GitHub action to a commit SHA rather than a tag, with the
+  version it stood for in a comment beside it. A tag is mutable, and the
+  release job can mint a PyPI credential, so a moved tag on
+  `actions/checkout` or `astral-sh/setup-uv` was a path to the package.
+  `ci.yml` is pinned on the same terms: it is not privileged itself, but
+  the release now publishes on its verdict, so an action that could turn a
+  red run green sits inside the same boundary. The SHAs are the ones the
+  tags in use already resolved to, so nothing about the runs changes.
+- Add `.github/dependabot.yml` for the actions, without which pinning
+  would amount to staying on one commit forever: a fix published upstream
+  no longer arrives on its own once the tag stops moving. Minor and patch
+  updates are grouped into one monthly pull request; majors are left out
+  of the group so they are reviewed on their own.
+
 - Run the wheel smoke test from `scripts/smoke_test_wheel.py`, which both
   `just build` and the release workflow now call. It had lived as a
   heredoc inside `release.yml`, so the README's claim that `just build`

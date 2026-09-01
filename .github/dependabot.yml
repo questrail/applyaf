@@ -1,0 +1,19 @@
+version: 2
+
+updates:
+  # The actions in ci.yml and release.yml are pinned to commit SHAs, so a fix
+  # published upstream does not reach this repository on its own the way a
+  # moving tag would. Without this, pinning would amount to staying on one
+  # commit forever. Dependabot rewrites the SHA and the version comment
+  # beside it together.
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly
+    groups:
+      # Minor and patch updates arrive as one pull request rather than one
+      # per action. Majors are deliberately left out of the group, so that a
+      # change like setup-uv v7 to v10 is reviewed on its own.
+      actions:
+        update-types: ["minor", "patch"]
+        patterns: ["*"]
