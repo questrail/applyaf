@@ -5,10 +5,16 @@ on:
     branches: [master]
   pull_request:
     branches: [master]
+  # The release workflow calls this one, so that a tag cannot publish what CI
+  # has not checked.
+  workflow_call:
   workflow_dispatch:
 
+# The group is a literal rather than github.workflow, which resolves to the
+# calling workflow's name when this one is reused: sharing a group with the
+# caller would leave the called run waiting for a slot the caller is holding.
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
+  group: ci-${{ github.ref }}
   cancel-in-progress: true
 
 # The repository default is write; nothing here needs more than to read the
@@ -50,8 +56,11 @@ jobs:
       - name: Test
         run: uv run pytest --cov --cov-report=lcov:coverage.lcov --cov-report=term
 
+      # Skipped when the release workflow calls this one: github.ref is the
+      # caller's, so a tag run would re-report the coverage the same commit
+      # already reported when it landed on master.
       - name: Report coverage to Coveralls
-        if: matrix.python-version == '3.13'
+        if: matrix.python-version == '3.13' && !startsWith(github.ref, 'refs/tags/')
         uses: coverallsapp/github-action@v2
         with:
           file: coverage.lcov

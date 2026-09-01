@@ -102,14 +102,24 @@ The entries decide the bump, so the prompt puts them next to the versions they
 would produce rather than leaving the choice to memory. Answering `q`, or
 anything unrecognized, changes nothing.
 
-The tag push runs the [release workflow][], which rechecks the tag against the
-version in `pyproject.toml`, repeats the checks, and builds. Every check to that
-point runs against the source tree, so the workflow then installs the wheel it
-just built somewhere `src/` is not on the path and imports it there, which is
-the only step that can catch a packaging mistake that left something out of the
-distribution. It uploads once that passes. There is no PyPI API token anywhere:
-the workflow authenticates with [trusted publishing][], which mints a short
-lived credential from the GitHub OIDC identity of that run.
+The tag push runs the [release workflow][], which waits on the whole [CI
+workflow][ci link] before it does anything else: the 3.12, 3.13, and 3.14
+matrix and the dependency floor job. `git push --follow-tags` starts both at
+once, so without that wait an upload could go out while 3.14 was still running,
+or already red. It then checks that the tagged commit is on `master`, since a
+tag is only a pointer and one placed anywhere else would otherwise publish
+whatever it points at, rechecks the tag against the version in `pyproject.toml`,
+and builds.
+
+Every check to that point runs against the source tree, so the workflow then
+installs the wheel it just built somewhere `src/` is not on the path and imports
+it there, which is the only step that can catch a packaging mistake that left
+something out of the distribution. It uploads once that passes. There is no PyPI
+API token anywhere: the workflow authenticates with [trusted publishing][], which
+mints a short lived credential from the GitHub OIDC identity of that run. The
+upload names a `--check-url`, so a run that uploaded one distribution and then
+failed on the other can be retried instead of stranding a version number that
+PyPI will never allow to be reused.
 
 Uploading is followed by a [GitHub release][releases] for the tag, carrying the
 CHANGELOG section for that version as its notes and the built distributions as

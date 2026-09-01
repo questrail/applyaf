@@ -4,10 +4,34 @@ on:
   push:
     tags: ["v*"]
 
+# A publish is not something to cancel part way through, so a second push of
+# the same tag queues behind the first rather than interrupting it. The group
+# is deliberately unlike the one in ci.yml, which this workflow calls: matching
+# groups would leave the called run waiting on a slot this one is holding.
+concurrency:
+  group: publish-${{ github.ref }}
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
 jobs:
+  # Publishing waits on the whole matrix and on the dependency floor job. The
+  # release used to recheck only what it could reach itself, on 3.13 alone,
+  # while `git push --follow-tags` started this workflow and CI at the same
+  # time: nothing stopped an upload that went out while 3.14 was still running,
+  # or already red.
+  ci:
+    name: CI
+    uses: ./.github/workflows/ci.yml
+    permissions:
+      contents: read
+
   release:
     name: Build and publish to PyPI
+    needs: ci
     runs-on: ubuntu-latest
+    timeout-minutes: 15
 
     # Trusted publishing mints a short lived token from this OIDC identity, so
     # there is no PyPI API token to store, rotate, or leak. contents: write is
@@ -22,6 +46,25 @@ jobs:
     steps:
       - name: Check out the repository
         uses: actions/checkout@v7
+        with:
+          # merge-base needs real history, and the default shallow checkout
+          # has none.
+          fetch-depth: 0
+
+      # `just release` refuses to cut from anywhere but master, but that is a
+      # local courtesy; this workflow trusts any v* tag that reaches it. A tag
+      # is just a pointer, and one placed on a branch or on a commit that never
+      # landed would otherwise publish whatever it points at.
+      - name: Verify the tag is on master
+        run: |
+          if ! git rev-parse -q --verify refs/remotes/origin/master >/dev/null; then
+            echo "origin/master was not fetched; cannot tell where the tag sits" >&2
+            exit 1
+          fi
+          if ! git merge-base --is-ancestor "$GITHUB_SHA" origin/master; then
+            echo "$GITHUB_REF_NAME points at a commit that is not on master" >&2
+            exit 1
+          fi
 
       - name: Install uv and Python
         uses: astral-sh/setup-uv@v7
@@ -29,9 +72,10 @@ jobs:
           enable-cache: true
           python-version: "3.13"
 
-      - name: Install the project and its dependencies
-        run: uv sync --locked
-
+      # No `uv sync` precedes this. Reading the version needs no environment,
+      # the build makes its own, and the smoke test below installs the wheel
+      # into an isolated one. The lock file is checked by the `uv sync
+      # --locked` in the CI job this release already waits on.
       - name: Verify the tag matches the packaged version
         run: |
           tag="${GITHUB_REF_NAME#v}"
@@ -41,22 +85,10 @@ jobs:
             exit 1
           fi
 
-      - name: Lint
-        run: uv run ruff check
-
-      - name: Check formatting
-        run: uv run ruff format --check
-
-      - name: Type check
-        run: uv run pyright
-
-      - name: Test
-        run: uv run pytest
-
       - name: Build the distributions
         run: uv build
 
-      # Every check above runs against the source tree, so a packaging mistake
+      # Every check so far runs against the source tree, so a packaging mistake
       # that leaves something out of the wheel passes all of them. Install the
       # wheel that is about to be uploaded into an environment that has no path
       # to src/ and exercise it there instead.
@@ -115,8 +147,16 @@ jobs:
           print("\n\n".join([notes, *(["\n".join(definitions)] if definitions else [])]))
           PY
 
+      # --check-url makes the upload resumable. Without it, a run that uploaded
+      # the sdist and then lost the wheel could not be retried: the second
+      # attempt fails on the file PyPI already has, and a version number can
+      # never be reused. With it, the files already up are skipped and the rest
+      # goes out.
       - name: Publish to PyPI
-        run: uv publish --trusted-publishing always
+        run: |
+          uv publish \
+            --trusted-publishing always \
+            --check-url https://pypi.org/simple/applyaf/
 
       - name: Create the GitHub release
         env:

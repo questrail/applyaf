@@ -38,6 +38,39 @@ This file contains all notable changes to the [applyaf][] project.
 
 ### Changed
 
+- Gate the release on CI. `release.yml` now calls `ci.yml` as a reusable
+  workflow and publishes only once the whole 3.12/3.13/3.14 matrix and
+  the dependency floor job are green. It had rechecked only what it could
+  reach itself, on 3.13 alone, while `git push --follow-tags` started the
+  release and CI at the same time, so nothing stopped an upload that went
+  out while 3.14 was still running or already red. The lint, format, type
+  check, and test steps are gone from `release.yml` as a result, and with
+  them the third copy of a block that already lived in the `Justfile` and
+  in `ci.yml`. `uv sync --locked` went too: reading the version needs no
+  environment, the build makes its own, and the wheel smoke test installs
+  into an isolated one.
+- Verify that the tagged commit is on `master` before publishing. `just
+  release` refuses to cut from anywhere else, but that is a local
+  courtesy and the workflow trusted any `v*` tag that reached it; a tag
+  is only a pointer, and one placed on a branch or on a commit that never
+  landed would have published whatever it pointed at. The check needs
+  real history, so the release checkout is no longer shallow.
+- Pass `--check-url` to `uv publish`, making the upload resumable. A run
+  that uploaded the sdist and then lost the wheel could not be retried:
+  the second attempt failed on the file PyPI already had, and a version
+  number can never be reused. Files already uploaded are now skipped and
+  the rest goes out.
+- Give `release.yml` a concurrency group and a 15 minute timeout, so that
+  a second push of the same tag queues behind the first rather than
+  racing it. A publish is not something to cancel part way through, so
+  `cancel-in-progress` is off. The group in `ci.yml` is now the literal
+  `ci-` rather than `${{ github.workflow }}-`, which resolves to the
+  calling workflow's name when `ci.yml` is reused and would have left the
+  called run waiting on a slot the release job was holding.
+- Skip the Coveralls report when `ci.yml` runs as part of a release,
+  where it would only re-report the coverage that same commit already
+  reported when it landed on `master`.
+
 - Upgrade numpy in the lock file from 2.2.0 to 2.5.2. 2.2.0 predates
   Python 3.14 and ships no cp314 wheels, so a 3.14 job would have had to
   compile numpy from source on every run; cp314 wheels start at numpy
