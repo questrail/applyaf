@@ -4,6 +4,8 @@ This file contains all notable changes to the [applyaf][] project.
 
 ## Unreleased
 
+## v3.0.2 - 2026-09-01
+
 ### Added
 
 - Create a GitHub release for each tag from the release workflow, with
