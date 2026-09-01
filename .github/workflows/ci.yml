@@ -56,3 +56,42 @@ jobs:
         with:
           file: coverage.lcov
           format: lcov
+
+  floor:
+    name: Lowest supported dependencies
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@v7
+
+      - name: Install uv and Python
+        uses: astral-sh/setup-uv@v7
+        with:
+          enable-cache: true
+          # The floor is a claim about numpy, not about the interpreter, and
+          # numpy ships no cp314 wheels below 2.3.2, so resolving to the
+          # numpy>=2.2.0 floor on 3.14 would compile it from source. Check it
+          # on the oldest interpreter the project supports instead.
+          python-version: "3.12"
+
+      # The version floors in pyproject.toml are a promise to anyone installing
+      # applyaf alongside something else that holds numpy back, and the test
+      # job never tests them: it installs whatever uv.lock pins, which is the
+      # newest numpy rather than the oldest allowed one. --resolution
+      # lowest-direct installs the oldest instead, so that a change which
+      # quietly starts needing a newer numpy fails here rather than in a bug
+      # report. It re-resolves instead of reading uv.lock, and rewrites the
+      # lock in passing, which is why --locked is absent and why this belongs
+      # on a throwaway checkout.
+      - name: Install the lowest dependency versions pyproject.toml allows
+        run: uv sync --resolution lowest-direct
+
+      - name: Report the resolved numpy version
+        run: uv run --no-sync python -c "import numpy; print('numpy', numpy.__version__)"
+
+      # Only the suite runs here. lowest-direct pins the dev tools to their
+      # floors too, and an older ruff formats differently, so linting at this
+      # resolution would report on the tooling rather than on the floor.
+      - name: Test
+        run: uv run --no-sync pytest

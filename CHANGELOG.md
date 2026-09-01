@@ -25,6 +25,16 @@ This file contains all notable changes to the [applyaf][] project.
   anything that would notice if they stopped being clean, since
   `requires-python = ">=3.12"` had let 3.14 install all along without a
   matrix entry standing behind it.
+- Test the dependency floors in CI with a `--resolution lowest-direct`
+  job. The matrix installs what `uv.lock` pins, which is the newest numpy
+  rather than the oldest that `numpy>=2.2.0` promises to anyone
+  installing applyaf alongside something that holds numpy back, so the
+  floor was a claim with nothing standing behind it. The job installs
+  numpy 2.2.0 and runs the suite against it. It runs on 3.12, since numpy
+  ships no cp314 wheels below 2.3.2 and resolving to the floor on 3.14
+  would compile numpy from source. Only the suite runs there, because
+  lowest-direct pins the dev tools to their floors too and an older ruff
+  formats differently.
 
 ### Changed
 
