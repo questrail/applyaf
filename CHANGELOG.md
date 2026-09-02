@@ -46,6 +46,15 @@ This file contains all notable changes to the [applyaf][] project.
   request; numpy is left out of the group, since it is the one runtime
   dependency and both `requires-python` and the floor job make claims
   about it.
+- `just release-check`, which runs the refusals `just release` opens with and
+  stops there: a dirty working tree, a branch other than `master`, a `master`
+  behind its upstream, an empty `Unreleased` section. Asking whether a release
+  can be cut no longer means starting one and reading the error.
+- `just doc`, which searches pydoc for a given term.
+- Ignore `.pypirc`. A copy holding a PyPI username and password predates the
+  move to trusted publishing, which mints a short lived credential per
+  release and leaves nothing on disk; nothing here needs the file, and
+  ignoring it keeps a leftover from being committed by accident.
 
 ### Changed
 
@@ -80,6 +89,18 @@ This file contains all notable changes to the [applyaf][] project.
   to defer to, which listed one person twice, is gone. `[project.authors]`
   in `pyproject.toml` is untouched: it populates `Author-email` for the
   PyPI contact rather than standing as a copyright record.
+- `just release` depends on `cov` rather than `test`, which is what `just
+  build` already did. CI runs pytest under coverage and fails below the
+  `fail_under` floor in `pyproject.toml`, so the bare suite `release` ran left
+  that gate as one it never applied, and it could tag a version CI would then
+  refuse to publish.
+- The CHANGELOG parser that reads the `Unreleased` section moved out of
+  `release` and into a private `unreleased` recipe. `release-check` and
+  `release` both read it, one to refuse an empty section and the other to show
+  what is about to ship, so it is written once rather than inlined in each.
+- Promote "Releasing to PyPI" in the README from a fourth level heading to a
+  third. It had been nested under "Development Setup on macOS", which made
+  releasing look like a macOS specific topic.
 
 ### Fixed
 
