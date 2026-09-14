@@ -101,6 +101,25 @@ This file contains all notable changes to the [applyaf][] project.
 - Promote "Releasing to PyPI" in the README from a fourth level heading to a
   third. It had been nested under "Development Setup on macOS", which made
   releasing look like a macOS specific topic.
+- Build with [uv_build][] rather than hatchling. hatchling arrived in v1.5.0 as
+  the replacement for setuptools, before uv had a build backend of its own; uv
+  already manages and locks this project, so the backend is one fewer tool in
+  the build. The `[tool.hatch.build.targets.wheel]` stanza it needed is gone,
+  since `src/applyaf` is what uv_build looks for by default. The wheel holds
+  the same files, and the module sources and license are byte for byte what
+  hatchling produced. `METADATA` lists its fields in a different order, declares
+  core metadata 2.4 rather than 2.5, and adds an `Author` field carrying the
+  name already in `Author-email`.
+- Pin the build backend to a minor range. `[build-system] requires` is not part
+  of `uv.lock`, so an unpinned backend was resolved fresh on every build,
+  including the release run that produces the attested distributions. It was
+  the one input to the published wheel that nothing held still, next to actions
+  pinned to commit SHAs and dependencies installed with `uv sync --locked`.
+- Ship a minimal source distribution. uv_build includes the module, README,
+  LICENSE, and `pyproject.toml`, where hatchling had included everything git
+  tracks. The wheel is unchanged; what the sdist no longer carries is the test
+  suite, its sample data, and `uv.lock`, so it is no longer enough on its own to
+  check that antenna factors and cable loss are still applied correctly.
 
 ### Fixed
 
@@ -131,6 +150,9 @@ This file contains all notable changes to the [applyaf][] project.
   clean one. A runner has no `.venv`, so `release.yml` was already getting
   the isolation the local run was not; it carries the flag too, so that
   the two really do run the same command.
+- Ignore `.DS_Store`. It had only ever been ignored through a global git config
+  on the author machine, so nothing stopped a contributor from committing one
+  into `src/`, where the build would carry it into both distributions.
 
 ## v3.0.2 - 2026-09-01
 
@@ -549,5 +571,6 @@ This file contains all notable changes to the [applyaf][] project.
 [#1]: https://github.com/questrail/applyaf/issues/1
 [#2]: https://github.com/questrail/applyaf/issues/2
 [applyaf]: https://github.com/questrail/applyaf
+[uv_build]: https://docs.astral.sh/uv/concepts/build-backend/
 [zizmor]: https://docs.zizmor.sh/
 [PEP 740]: https://peps.python.org/pep-0740/
