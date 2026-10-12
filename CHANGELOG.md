@@ -4,6 +4,8 @@ This file contains all notable changes to the [applyaf][] project.
 
 ## Unreleased
 
+## v3.0.3 - 2026-10-12
+
 ### Added
 
 - Audit the workflows with [zizmor][] in CI and in `just lint`. Everything
